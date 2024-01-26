@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MyApplicationTest" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:statusBarColor">#B4ECE1FB</item>
+
+        <!-- Other theme customizations go here -->
+    </style>
+</resources>
