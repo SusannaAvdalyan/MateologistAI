@@ -1,11 +1,13 @@
 package com.example.myapplicationtest
 
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
+import android.speech.tts.Voice
+import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,6 +28,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,25 +39,28 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.layoutId
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.myapplicationtest.R
-import com.example.myapplicationtest.SummarizeUiState
-import com.example.myapplicationtest.SummarizeViewModel
 import com.example.myapplicationtest.ui.theme.MyApplicationTestTheme
 import com.google.ai.client.generativeai.GenerativeModel
-import com.example.myapplicationtest.ui.theme.MyApplicationTestTheme
+import java.util.Locale
 
 class MainActivity : ComponentActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+
+
         setContent {
             MyApplicationTestTheme {
-                // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background,
@@ -84,18 +91,40 @@ internal fun SummarizeRoute(
 
 @Composable
 fun SummarizeScreen(
+
     uiState: SummarizeUiState = SummarizeUiState.Initial,
     onSummarizeClicked: (String) -> Unit = {}
 ) {
     var prompt by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    var tts by remember { mutableStateOf<TextToSpeech?>(null) }
 
+
+    DisposableEffect(context) {
+        tts = TextToSpeech(context) { status ->
+            if (status != TextToSpeech.ERROR) {
+                tts!!.language = Locale.US
+            }
+        }
+        onDispose {
+            tts?.stop()
+            tts?.shutdown()
+        }
+    }
+    LaunchedEffect(uiState) {
+        if (uiState is SummarizeUiState.Success && uiState.outputText.isNotBlank()) {
+            tts?.setPitch(0.001f)
+            tts?.setSpeechRate(1.0f)
+            tts?.speak(uiState.outputText, TextToSpeech.QUEUE_FLUSH, null, null)
+        }
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = Color(0xFFE6E6FA)),
+            .background(color = Color(0xFF444479))
+            .verticalScroll(rememberScrollState()),  // Add vertical scrolling
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Cute character image with rounded corners
         Image(
             painter = painterResource(id = R.drawable.appchar),
             contentDescription = null,
@@ -104,8 +133,6 @@ fun SummarizeScreen(
                 .padding(top = 30.dp)
                 .clip(RoundedCornerShape(16.dp))
         )
-
-        // Text input with a more modern design
         TextField(
             value = prompt,
             label = { Text(stringResource(R.string.summarize_label)) },
@@ -114,7 +141,7 @@ fun SummarizeScreen(
             modifier = Modifier
                 .padding(25.dp)
                 .background(
-                    color = Color(0xFFE2CFFA),
+                    color = Color(0xFFFFFFFF),
                     shape = RoundedCornerShape(12.dp)
                 )
                 .padding(2.dp)
@@ -123,14 +150,17 @@ fun SummarizeScreen(
         // Submit button
         TextButton(
             onClick = {
-                if (prompt.isNotBlank()) {
-                    onSummarizeClicked(prompt)
+                onSummarizeClicked(prompt)
+                if (uiState is SummarizeUiState.Success && uiState.outputText.isNotBlank()) {
+
                 }
+
             },
             modifier = Modifier
+                .testTag("submitButton")
                 .fillMaxWidth()
-                .padding(start=25.dp)
-                .padding(end=25.dp)
+                .padding(start = 25.dp)
+                .padding(end = 25.dp)
                 .background(
                     color = Color(0xFFBB86FC),
                     shape = RoundedCornerShape(20.dp)
@@ -138,10 +168,12 @@ fun SummarizeScreen(
         ) {
             Text(
                 text = stringResource(R.string.action_go),
-                color = Color.White,
+                color = Color(0xFFF6C8FD),
                 fontWeight = FontWeight.Bold
             )
+
         }
+
 
         when (uiState) {
             SummarizeUiState.Initial -> {
@@ -169,7 +201,7 @@ fun SummarizeScreen(
                         text = uiState.outputText,
                         modifier = Modifier
                             .padding(horizontal = 8.dp),
-                            color = Color(0x0F020202)
+                        color = Color(0xFFF6C8FD)
 
 
                     )
@@ -185,7 +217,9 @@ fun SummarizeScreen(
             }
         }
     }
+
 }
+
 
 @Composable
 @Preview(showSystemUi = true)
