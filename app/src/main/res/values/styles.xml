@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="RoundButton" parent="Widget.MaterialComponents.Button">
+        <item name="android:background">@drawable/round_button_background</item>
+    </style>
+
+</resources>
