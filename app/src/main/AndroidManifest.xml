@@ -15,7 +15,7 @@
         android:theme="@style/Theme.MyApplicationTest"
         tools:targetApi="31">
         <activity
-            android:name=".ChatActivity"
+            android:name=".FirstGeminiApp"
             android:exported="false" />
         <activity
             android:name=".EmailVerify"
