@@ -17,7 +17,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
-            app:srcCompat="@drawable/circle_bg" />
+            app:srcCompat="@drawable/appchar" />
 
         <TextView
             android:id="@+id/userAgentNameTextView"

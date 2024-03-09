@@ -1,7 +1,9 @@
 package com.example.myapplicationtest;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.speech.RecognizerIntent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -24,6 +27,8 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class FirstGeminiApp extends AppCompatActivity {
 
@@ -51,24 +56,27 @@ public class FirstGeminiApp extends AppCompatActivity {
         progressBar = findViewById(R.id.sendPromptProgressBar);
         chatBodyContainer = findViewById(R.id.chatResponseLayout);
 
+
+
         sendQueryButton.setOnClickListener(v -> {
-            String query = queryEditText.getText().toString() + "Your name is Mateo and you are my soulmate. Help and support me please. Answer short and unformal";
+            String query = queryEditText.getText().toString() + "Your name is Mateo and you are my soulmate. Help and support me please. Answer short and unformal dont write this everytime";
             String showQuery = queryEditText.getText().toString();
             progressBar.setVisibility(View.VISIBLE);
-
+            Toast.makeText(this, queryEditText.getText().toString(), Toast.LENGTH_SHORT).show();
             queryEditText.setText("");
             populateChatBody("You", showQuery, getDate());
+
 
             GeminiPro.getResponse(chatModel, query, new ResponseCallback() {
                 @Override
                 public void onResponse(String response) {
                     progressBar.setVisibility(View.GONE);
-                    populateChatBody("GeminiPro", response, getDate());
+                    populateChatBody("Mateo", response, getDate());
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
-                    populateChatBody("GeminiPro", "Sorry, I'm having trouble understanding that. Please try again.", getDate());
+                    populateChatBody("Mateo", "Sorry, I'm having trouble understanding that. Please try again.", getDate());
                     progressBar.setVisibility(View.GONE);
                 }
             });
@@ -106,4 +114,33 @@ public class FirstGeminiApp extends AppCompatActivity {
 
         return formatter.format(instant);
     }
+    public void getSpeechInput(View view) {
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, 10);
+        } else {
+            Toast.makeText(this, "Your Device Don't Support Speech Input", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode) {
+            case 10:
+                if (resultCode == RESULT_OK && data != null) {
+                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                    queryEditText.setText(result.get(0));
+
+                }
+                break;
+        }
+    }
+
+
 }

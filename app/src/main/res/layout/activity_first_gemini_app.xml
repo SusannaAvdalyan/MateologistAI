@@ -30,6 +30,14 @@
         android:paddingStart="16dp"
         android:paddingEnd="16dp">
 
+        <ImageButton
+            android:onClick="getSpeechInput"
+            android:id="@+id/VoiceButton"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:backgroundTint="@color/white"
+            app:srcCompat="@drawable/baseline_mic_24" />
+
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/queryEditText"
             android:layout_width="match_parent"
@@ -44,7 +52,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="12dp"
         android:backgroundTint="@color/lavender"
-        android:text="Send query" />
+        android:text="Send" />
 
     <ProgressBar
         android:id="@+id/sendPromptProgressBar"
