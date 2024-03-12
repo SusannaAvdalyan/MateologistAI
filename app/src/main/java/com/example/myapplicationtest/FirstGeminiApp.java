@@ -1,9 +1,13 @@
 package com.example.myapplicationtest;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.speech.tts.TextToSpeech;
+import android.speech.tts.Voice;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -28,16 +32,20 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
 public class FirstGeminiApp extends AppCompatActivity {
 
+    private TextToSpeech tts;
     private TextInputEditText queryEditText;
     private Button sendQueryButton;
     private ProgressBar progressBar;
     private LinearLayout chatBodyContainer;
     private ChatFutures chatModel;
 
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +58,6 @@ public class FirstGeminiApp extends AppCompatActivity {
         });
 
         chatModel = getChatModel();
-
         queryEditText = findViewById(R.id.queryEditText);
         sendQueryButton = findViewById(R.id.sendPromptButton);
         progressBar = findViewById(R.id.sendPromptProgressBar);
@@ -58,8 +65,33 @@ public class FirstGeminiApp extends AppCompatActivity {
 
 
 
+        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
+            @Override
+            public void onInit(int status) {
+                if (status == TextToSpeech.SUCCESS){
+                    int result = tts.setLanguage(Locale.US);
+                    tts.setPitch(0.00000000001f);
+                    tts.setSpeechRate(1.6f);
+                    Set<Voice> voices = tts.getVoices();
+                    List<Voice> voiceList = new ArrayList<>(voices);
+                    Voice selectedVoice = voiceList.get(11);
+                    tts.setVoice(selectedVoice);
+
+                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
+                        Log.e("tts", "Language not supported");
+                    } else {
+                        sendQueryButton.setEnabled(true);
+                    }
+                } else {
+                    Log.e("tts", "Initialization failed");
+                }
+            }
+        });
+
+
+
         sendQueryButton.setOnClickListener(v -> {
-            String query = queryEditText.getText().toString() + "Your name is Mateo and you are my soulmate. Help and support me please. Answer short and unformal dont write this everytime";
+            String query = queryEditText.getText().toString() + "Act like your name is Mateo and you are my soulmate, answer short and unformal" ;
             String showQuery = queryEditText.getText().toString();
             progressBar.setVisibility(View.VISIBLE);
             Toast.makeText(this, queryEditText.getText().toString(), Toast.LENGTH_SHORT).show();
@@ -71,6 +103,7 @@ public class FirstGeminiApp extends AppCompatActivity {
                 @Override
                 public void onResponse(String response) {
                     progressBar.setVisibility(View.GONE);
+                    tts.speak(response, TextToSpeech.QUEUE_FLUSH, null, null);
                     populateChatBody("Mateo", response, getDate());
                 }
 
@@ -123,7 +156,7 @@ public class FirstGeminiApp extends AppCompatActivity {
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivityForResult(intent, 10);
         } else {
-            Toast.makeText(this, "Your Device Don't Support Speech Input", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Your Device Doesn't Support Speech Input", Toast.LENGTH_SHORT).show();
         }
     }
 
