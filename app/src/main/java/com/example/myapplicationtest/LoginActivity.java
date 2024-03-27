@@ -36,6 +36,14 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
         signupRedirectText = findViewById(R.id.signupRedirect);
 
+        // Check if the user is already signed in
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser != null && currentUser.isEmailVerified()) {
+            // User is already signed in and email is verified
+            proceedToNextActivity();
+            return; // Exit onCreate method to prevent further execution
+        }
+
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,8 +73,7 @@ public class LoginActivity extends AppCompatActivity {
                                 FirebaseUser user = auth.getCurrentUser();
                                 if (user != null && user.isEmailVerified()) {
                                     Toast.makeText(LoginActivity.this, "Login Successful", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(LoginActivity.this, FirstGeminiApp.class));
-                                    finish();
+                                    proceedToNextActivity();
                                 } else {
                                     Toast.makeText(LoginActivity.this, "Email not verified or user not logged in", Toast.LENGTH_SHORT).show();
                                 }
@@ -87,5 +94,10 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
             }
         });
+    }
+
+    private void proceedToNextActivity() {
+        startActivity(new Intent(LoginActivity.this, FirstGeminiApp.class));
+        finish();
     }
 }

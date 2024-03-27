@@ -37,6 +37,14 @@ public class SignUpActivity extends AppCompatActivity {
         loginRedirectText = findViewById(R.id.loginRedirect);
         confirmPassword = findViewById(R.id.signup_confirmpassword);
 
+        // Check if the user is already signed in
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser != null && currentUser.isEmailVerified()) {
+            // User is already signed in and email is verified
+            proceedToNextActivity();
+            return; // Exit onCreate method to prevent further execution
+        }
+
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -103,8 +111,7 @@ public class SignUpActivity extends AppCompatActivity {
                         // Email verification sent
                         Toast.makeText(SignUpActivity.this, "Verification email sent", Toast.LENGTH_SHORT).show();
                         // Redirect to login activity
-                        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
-                        finish();
+                        proceedToNextActivity();
                     } else {
                         // Email verification failed
                         Toast.makeText(SignUpActivity.this, "Failed to send verification email: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -112,5 +119,10 @@ public class SignUpActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void proceedToNextActivity() {
+        startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
+        finish();
     }
 }
