@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -28,6 +29,11 @@ import com.google.ai.client.generativeai.java.ChatFutures;
 import com.google.ai.client.generativeai.java.GenerativeModelFutures;
 import com.google.android.material.textfield.TextInputEditText;
 
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
+
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -40,7 +46,7 @@ public class FirstGeminiApp extends AppCompatActivity {
 
     private TextToSpeech tts;
     private TextInputEditText queryEditText;
-    private Button sendQueryButton;
+    private ImageButton sendQueryButton;
     private ProgressBar progressBar;
     private LinearLayout chatBodyContainer;
     private ChatFutures chatModel;
@@ -49,6 +55,7 @@ public class FirstGeminiApp extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_first_gemini_app);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -105,6 +112,7 @@ public class FirstGeminiApp extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                     tts.speak(response, TextToSpeech.QUEUE_FLUSH, null, null);
                     populateChatBody("Mateo", response, getDate());
+                    sendMessageToDatabase(showQuery, response);
                 }
 
                 @Override
@@ -113,6 +121,7 @@ public class FirstGeminiApp extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                 }
             });
+
         });
     }
 
@@ -135,17 +144,19 @@ public class FirstGeminiApp extends AppCompatActivity {
         userAgentMessage.setText(message);
         dateTextView.setText(date);
 
+//        sendMessageToDatabase(message, date);
+
         chatBodyContainer.addView(view);
 
         ScrollView scrollView = findViewById(R.id.scrollView);
         scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
     }
 
-    private String getDate() {
-        Instant instant = Instant.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd:HH-mm").withZone(ZoneId.systemDefault());
+    private static String getDate() {
+        long currentTimeMillis = System.currentTimeMillis();
+        String currentTimeString = String.valueOf(currentTimeMillis);
 
-        return formatter.format(instant);
+        return currentTimeString;
     }
     public void getSpeechInput(View view) {
 
@@ -158,6 +169,15 @@ public class FirstGeminiApp extends AppCompatActivity {
         } else {
             Toast.makeText(this, "Your Device Doesn't Support Speech Input", Toast.LENGTH_SHORT).show();
         }
+    }
+
+
+    public void sendMessageToDatabase(String userText, String aiText) {
+        Message message = new Message(userText, aiText);
+        String deltaTime = getDate();
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages").child(deltaTime);
+        Toast.makeText(this, "Function", Toast.LENGTH_SHORT).show();
+        messagesRef.setValue(message);
     }
 
     @Override

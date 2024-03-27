@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:orientation="vertical"
     android:layout_height="match_parent"
+    android:padding="16dp"
     tools:context=".FirstGeminiApp">
 
     <TextView
@@ -13,9 +14,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="84dp"
-        android:text="Hello I am Mateo"
+        android:text="Welcome!"
         android:textAlignment="center"
         android:textSize="34sp" />
+
     <ImageView
         android:layout_width="200dp"
         android:layout_height="200dp"
@@ -26,33 +28,43 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:paddingStart="16dp"
-        android:paddingEnd="16dp">
-
-        <ImageButton
-            android:onClick="getSpeechInput"
-            android:id="@+id/VoiceButton"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:backgroundTint="@color/white"
-            app:srcCompat="@drawable/baseline_mic_24" />
+        android:layout_marginTop="5dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/queryEditText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="@color/white"
             android:hint="Prompt" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
-    <Button
-        android:id="@+id/sendPromptButton"
-        android:layout_width="150dp"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="12dp"
-        android:backgroundTint="@color/lavender"
-        android:text="Send" />
+        android:orientation="horizontal"
+        android:gravity="end">
+
+        <ImageButton
+            android:id="@+id/sendPromptButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@color/white"
+            android:src="@drawable/baseline_send_24"
+            android:padding="12dp" />
+
+        <ImageButton
+            android:id="@+id/VoiceButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/baseline_mic_24"
+            android:backgroundTint="@color/white"
+            android:padding="12dp"
+            android:onClick="getSpeechInput" />
+
+    </LinearLayout>
 
     <ProgressBar
         android:id="@+id/sendPromptProgressBar"
