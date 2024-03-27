@@ -30,8 +30,11 @@ import com.google.ai.client.generativeai.java.GenerativeModelFutures;
 import com.google.android.material.textfield.TextInputEditText;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 
 import java.time.Instant;
@@ -56,6 +59,7 @@ public class FirstGeminiApp extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
+        retrieveMessagesFromFirebase();
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_first_gemini_app);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -193,6 +197,33 @@ public class FirstGeminiApp extends AppCompatActivity {
                 }
                 break;
         }
+    }
+
+    private void retrieveMessagesFromFirebase() {
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages");
+        messagesRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // Clear existing chat UI
+                chatBodyContainer.removeAllViews();
+
+                // Iterate through messages
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    Message message = snapshot.getValue(Message.class);
+                    if (message != null) {
+                        // Populate chat UI with messages
+                        populateChatBody("You", message.getText_user(), getDate());
+                        populateChatBody("Mateo", message.getText_ai(), getDate());
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Handle error
+                Log.e("Firebase", "Error fetching messages", databaseError.toException());
+            }
+        });
     }
 
 
