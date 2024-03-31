@@ -1,68 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
     android:padding="16dp"
     tools:context=".FirstGeminiApp">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="84dp"
-        android:text="Welcome!"
-        android:textAlignment="center"
-        android:textSize="34sp" />
-
+    <!-- Image View at the top -->
     <ImageView
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:src="@drawable/appchar"
-        android:layout_gravity="center"
-        />
+        android:id="@+id/imageView"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="15dp"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/appchar" />
 
-    <com.google.android.material.textfield.TextInputLayout
+    <!-- Scroll View in the center -->
+    <ScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp">
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottomLayout"
+        android:layout_below="@id/imageView">
 
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/queryEditText"
+        <LinearLayout
+            android:id="@+id/chatResponseLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:backgroundTint="@color/white"
-            android:hint="Prompt" />
+            android:orientation="vertical"
+            android:paddingStart="20dp"
+            android:paddingEnd="20dp">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <!-- Your chat response items will go here -->
 
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Layout for input field and buttons at the bottom -->
     <LinearLayout
+        android:id="@+id/bottomLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:gravity="end">
 
-        <ImageButton
-            android:id="@+id/sendPromptButton"
-            android:layout_width="wrap_content"
+        <!-- Text Input Layout -->
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:background="@color/white"
-            android:src="@drawable/baseline_send_24"
-            android:padding="12dp" />
+            android:layout_marginTop="5dp">
 
-        <ImageButton
-            android:id="@+id/VoiceButton"
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/queryEditText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:backgroundTint="@color/white"
+                android:hint="Prompt" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- ImageButtons -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:src="@drawable/baseline_mic_24"
-            android:backgroundTint="@color/white"
-            android:padding="12dp"
-            android:onClick="getSpeechInput" />
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/sendPromptButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="15dp"
+                android:background="@color/white"
+                android:src="@drawable/baseline_send_24"
+                android:padding="12dp" />
+
+            <ImageButton
+                android:id="@+id/VoiceButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:src="@drawable/baseline_mic_24"
+                android:backgroundTint="@color/white"
+                android:layout_marginTop="15dp"
+                android:padding="12dp"
+                android:onClick="getSpeechInput" />
+        </LinearLayout>
 
     </LinearLayout>
 
@@ -74,21 +103,4 @@
         android:layout_marginTop="32dp"
         android:visibility="gone" />
 
-    <ScrollView
-        android:id="@+id/scrollView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginTop="32dp">
-
-        <LinearLayout
-            android:id="@+id/chatResponseLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp">
-
-        </LinearLayout>
-    </ScrollView>
-
-</LinearLayout>
+</RelativeLayout>

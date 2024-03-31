@@ -8,6 +8,7 @@ import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -138,23 +139,37 @@ public class FirstGeminiApp extends AppCompatActivity {
 
     public void populateChatBody(String userName, String message, String date) {
         LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.chat_message_block, null);
+        View view;
 
-        TextView userAgentName = view.findViewById(R.id.userAgentNameTextView);
-        TextView userAgentMessage = view.findViewById(R.id.userAgentMessageTextView);
-        TextView dateTextView = view.findViewById(R.id.dateTextView);
+        if (userName.equals("You")) {
+            view = inflater.inflate(R.layout.item_user_message, null);
+        } else {
+            view = inflater.inflate(R.layout.item_ai_message, null);
+        }
 
-        userAgentName.setText(userName);
-        userAgentMessage.setText(message);
-        dateTextView.setText(date);
+        TextView messageTextView = view.findViewById(R.id.messageTextView);
+        messageTextView.setText(message);
 
-//        sendMessageToDatabase(message, date);
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+
+        if (userName.equals("You")) {
+            layoutParams.gravity = Gravity.END;
+        } else {
+            layoutParams.gravity = Gravity.START;
+        }
+
+        view.setLayoutParams(layoutParams);
 
         chatBodyContainer.addView(view);
 
         ScrollView scrollView = findViewById(R.id.scrollView);
         scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
     }
+
+
 
     private static String getDate() {
         long currentTimeMillis = System.currentTimeMillis();
