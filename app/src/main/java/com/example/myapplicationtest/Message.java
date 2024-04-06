@@ -1,32 +1,34 @@
 package com.example.myapplicationtest;
 
 public class Message {
-    private String text_user;
-    private String text_ai;
+    public static String SENT_BY_ME = "me";
+    public static String SENT_BY_BOT="bot";
 
+    String message;
+    String sentBy;
     public Message() {
         // Default constructor required for Firebase
     }
 
-    public Message(String text_user, String text_ai) {
-        this.text_user = text_user;
-        this.text_ai = text_ai;
+    public String getMessage() {
+        return message;
     }
 
-    public String getText_user() {
-        return text_user;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
-    public void setText_user(String text_user) {
-        this.text_user = text_user;
+    public String getSentBy() {
+        return sentBy;
     }
 
-    public String getText_ai() {
-        return text_ai;
+    public void setSentBy(String sentBy) {
+        this.sentBy = sentBy;
     }
 
-    public void setText_ai(String text_ai) {
-        this.text_ai = text_ai;
+    public Message(String message, String sentBy) {
+        this.message = message;
+        this.sentBy = sentBy;
     }
 }
 

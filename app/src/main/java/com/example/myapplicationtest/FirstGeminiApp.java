@@ -25,6 +25,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.ai.client.generativeai.java.ChatFutures;
 import com.google.ai.client.generativeai.java.GenerativeModelFutures;
@@ -49,19 +51,19 @@ import java.util.Set;
 public class FirstGeminiApp extends AppCompatActivity {
 
     private TextToSpeech tts;
-    private TextInputEditText queryEditText;
     private ImageButton sendQueryButton;
+    private TextInputEditText queryEditText;
     private ProgressBar progressBar;
-    private LinearLayout chatBodyContainer;
     private ChatFutures chatModel;
+    List<Message> messageList;
+    MessageAdapter messageAdapter;
+    RecyclerView recyclerView;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
-        retrieveMessagesFromFirebase();
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_first_gemini_app);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -69,107 +71,80 @@ public class FirstGeminiApp extends AppCompatActivity {
             return insets;
         });
 
+        recyclerView = findViewById(R.id.recyclerView);
+        messageList = new ArrayList<>();
         chatModel = getChatModel();
-        queryEditText = findViewById(R.id.queryEditText);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
         sendQueryButton = findViewById(R.id.sendPromptButton);
         progressBar = findViewById(R.id.sendPromptProgressBar);
-        chatBodyContainer = findViewById(R.id.chatResponseLayout);
+        queryEditText = findViewById(R.id.queryEditText);
+        messageAdapter = new MessageAdapter(messageList);
+        recyclerView.setAdapter(messageAdapter);
 
+        tts = new TextToSpeech(this, status -> {
+            if (status == TextToSpeech.SUCCESS) {
+                int result = tts.setLanguage(Locale.US);
+                tts.setPitch(0.00000000001f);
+                tts.setSpeechRate(1.6f);
+                Set<Voice> voices = tts.getVoices();
+                List<Voice> voiceList = new ArrayList<>(voices);
+                Voice selectedVoice = voiceList.get(11);
+                tts.setVoice(selectedVoice);
 
-
-        tts = new TextToSpeech(this, new TextToSpeech.OnInitListener() {
-            @Override
-            public void onInit(int status) {
-                if (status == TextToSpeech.SUCCESS){
-                    int result = tts.setLanguage(Locale.US);
-                    tts.setPitch(0.00000000001f);
-                    tts.setSpeechRate(1.6f);
-                    Set<Voice> voices = tts.getVoices();
-                    List<Voice> voiceList = new ArrayList<>(voices);
-                    Voice selectedVoice = voiceList.get(11);
-                    tts.setVoice(selectedVoice);
-
-                    if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED){
-                        Log.e("tts", "Language not supported");
-                    } else {
-                        sendQueryButton.setEnabled(true);
-                    }
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    Log.e("tts", "Language not supported");
                 } else {
-                    Log.e("tts", "Initialization failed");
+                    sendQueryButton.setEnabled(true);
                 }
+            } else {
+                Log.e("tts", "Initialization failed");
             }
         });
-
-
 
         sendQueryButton.setOnClickListener(v -> {
             String query = queryEditText.getText().toString() + "Act like your name is Mateo and you are my soulmate, answer short and unformal" ;
             String showQuery = queryEditText.getText().toString();
-            progressBar.setVisibility(View.VISIBLE);
-            Toast.makeText(this, queryEditText.getText().toString(), Toast.LENGTH_SHORT).show();
+            addToChat(query, Message.SENT_BY_ME);
             queryEditText.setText("");
-            populateChatBody("You", showQuery, getDate());
 
+            // Sending user query to the database
+            sendMessageToDatabase(showQuery, Message.SENT_BY_ME);
+
+            progressBar.setVisibility(View.VISIBLE); // Show progress bar while waiting for AI response
 
             GeminiPro.getResponse(chatModel, query, new ResponseCallback() {
                 @Override
                 public void onResponse(String response) {
                     progressBar.setVisibility(View.GONE);
                     tts.speak(response, TextToSpeech.QUEUE_FLUSH, null, null);
-                    populateChatBody("Mateo", response, getDate());
-                    sendMessageToDatabase(showQuery, response);
+                    addToChat(response, Message.SENT_BY_BOT);
+                    sendMessageToDatabase(response, Message.SENT_BY_BOT);
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
-                    populateChatBody("Mateo", "Sorry, I'm having trouble understanding that. Please try again.", getDate());
                     progressBar.setVisibility(View.GONE);
+                    Toast.makeText(FirstGeminiApp.this, "Error getting response from AI", Toast.LENGTH_SHORT).show();
                 }
             });
-
         });
+
+        retrieveMessagesFromFirebase();
     }
 
     private ChatFutures getChatModel() {
         GeminiPro model = new GeminiPro();
         GenerativeModelFutures modelFutures = model.getModel();
-
         return modelFutures.startChat();
     }
 
-    public void populateChatBody(String userName, String message, String date) {
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view;
-
-        if (userName.equals("You")) {
-            view = inflater.inflate(R.layout.item_user_message, null);
-        } else {
-            view = inflater.inflate(R.layout.item_ai_message, null);
-        }
-
-        TextView messageTextView = view.findViewById(R.id.messageTextView);
-        messageTextView.setText(message);
-
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-        );
-
-        if (userName.equals("You")) {
-            layoutParams.gravity = Gravity.END;
-        } else {
-            layoutParams.gravity = Gravity.START;
-        }
-
-        view.setLayoutParams(layoutParams);
-
-        chatBodyContainer.addView(view);
-
-        ScrollView scrollView = findViewById(R.id.scrollView);
-        scrollView.post(() -> scrollView.fullScroll(View.FOCUS_DOWN));
+    void addToChat(String message, String sentBy) {
+        runOnUiThread(() -> {
+            messageList.add(new Message(message, sentBy));
+            messageAdapter.notifyDataSetChanged();
+            recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
+        });
     }
-
-
 
     private static String getDate() {
         long currentTimeMillis = System.currentTimeMillis();
@@ -177,27 +152,16 @@ public class FirstGeminiApp extends AppCompatActivity {
 
         return currentTimeString;
     }
-    public void getSpeechInput(View view) {
 
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.getDefault());
-
-        if (intent.resolveActivity(getPackageManager()) != null) {
-            startActivityForResult(intent, 10);
-        } else {
-            Toast.makeText(this, "Your Device Doesn't Support Speech Input", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-
-    public void sendMessageToDatabase(String userText, String aiText) {
-        Message message = new Message(userText, aiText);
+    public void sendMessageToDatabase(String text, String sentBy) {
+        Message message = new Message(text, sentBy);
         String deltaTime = getDate();
         DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages").child(deltaTime);
-        Toast.makeText(this, "Function", Toast.LENGTH_SHORT).show();
-        messagesRef.setValue(message);
+        messagesRef.setValue(message)
+                .addOnSuccessListener(aVoid -> Toast.makeText(FirstGeminiApp.this, "Message sent to database", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Toast.makeText(FirstGeminiApp.this, "Failed to send message to database", Toast.LENGTH_SHORT).show());
     }
+
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -219,16 +183,12 @@ public class FirstGeminiApp extends AppCompatActivity {
         messagesRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                // Clear existing chat UI
-                chatBodyContainer.removeAllViews();
-
-                // Iterate through messages
+                messageList.clear(); // Clear existing messages
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Message message = snapshot.getValue(Message.class);
                     if (message != null) {
-                        // Populate chat UI with messages
-                        populateChatBody("You", message.getText_user(), getDate());
-                        populateChatBody("Mateo", message.getText_ai(), getDate());
+                        Toast.makeText(FirstGeminiApp.this, "Message", Toast.LENGTH_SHORT).show();
+                        addToChat(message.getMessage(), message.getSentBy());
                     }
                 }
             }
@@ -240,6 +200,4 @@ public class FirstGeminiApp extends AppCompatActivity {
             }
         });
     }
-
-
 }

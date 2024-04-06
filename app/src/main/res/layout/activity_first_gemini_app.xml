@@ -8,7 +8,6 @@
     android:padding="16dp"
     tools:context=".FirstGeminiApp">
 
-    <!-- Image View at the top -->
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="150dp"
@@ -18,28 +17,13 @@
         android:layout_alignParentTop="true"
         android:src="@drawable/appchar" />
 
-    <!-- Scroll View in the center -->
-    <ScrollView
-        android:id="@+id/scrollView"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/bottomLayout"
-        android:layout_below="@id/imageView">
+        android:layout_below="@id/imageView" />
 
-        <LinearLayout
-            android:id="@+id/chatResponseLayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingStart="20dp"
-            android:paddingEnd="20dp">
-
-            <!-- Your chat response items will go here -->
-
-        </LinearLayout>
-    </ScrollView>
-
-    <!-- Layout for input field and buttons at the bottom -->
     <LinearLayout
         android:id="@+id/bottomLayout"
         android:layout_width="match_parent"
