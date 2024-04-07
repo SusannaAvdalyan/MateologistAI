@@ -24,6 +24,8 @@ import com.google.ai.client.generativeai.java.GenerativeModelFutures;
 import com.google.android.material.textfield.TextInputEditText;
 
 import com.google.firebase.FirebaseApp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -48,10 +50,19 @@ public class MainActivity extends AppCompatActivity {
     List<MessageClass> messageList;
     MessageAdapter messageAdapter;
     RecyclerView recyclerView;
+    private FirebaseAuth mAuth; // Firebase authentication reference
+    private String currentUserID;
 
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+            currentUserID = currentUser.getUid();
+        }
+
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
         setContentView(R.layout.activity_first_gemini_app);
@@ -70,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         queryEditText = findViewById(R.id.queryEditText);
         messageAdapter = new MessageAdapter(messageList);
         recyclerView.setAdapter(messageAdapter);
+
 
         tts = new TextToSpeech(this, status -> {
             if (status == TextToSpeech.SUCCESS) {
@@ -147,12 +159,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sendMessageToDatabase(String text, String sentBy) {
-        MessageClass message = new MessageClass(text, sentBy);
-        String deltaTime = getDate();
-        DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages").child(deltaTime);
-        messagesRef.setValue(message);
-//                .addOnSuccessListener(aVoid -> Toast.makeText(FirstGeminiApp.this, "Message sent to database", Toast.LENGTH_SHORT).show())
-//                .addOnFailureListener(e -> Toast.makeText(FirstGeminiApp.this, "Failed to send message to database", Toast.LENGTH_SHORT).show());
+        if (currentUserID != null) {
+            MessageClass message = new MessageClass(text, sentBy);
+            String deltaTime = getDate();
+            DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages")
+                    .child(currentUserID) // Save messages under current user's ID
+                    .child(deltaTime);
+            messagesRef.setValue(message);
+        } else {
+            Toast.makeText(MainActivity.this, "User not authenticated", Toast.LENGTH_SHORT).show();
+        }
     }
 
 
@@ -172,25 +188,26 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void retrieveMessagesFromFirebase() {
-        DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages");
-        messagesRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                messageList.clear(); // Clear existing messages
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    MessageClass message = snapshot.getValue(MessageClass.class);
-                    if (message != null) {
-//                        Toast.makeText(FirstGeminiApp.this, "Message", Toast.LENGTH_SHORT).show();
-                        addToChat(message.getMessage(), message.getSentBy());
+        if (currentUserID != null) {
+            DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages")
+                    .child(currentUserID); // Query messages for current user's ID
+            messagesRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    messageList.clear(); // Clear existing messages
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        MessageClass message = snapshot.getValue(MessageClass.class);
+                        if (message != null) {
+                            addToChat(message.getMessage(), message.getSentBy());
+                        }
                     }
                 }
-            }
 
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-                // Handle error
-//                Log.e("Firebase", "Error fetching messages", databaseError.toException());
-            }
-        });
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                    // Handle error
+                }
+            });
+        }
     }
 }
