@@ -15,7 +15,10 @@
         android:theme="@style/Theme.MyApplicationTest"
         tools:targetApi="31">
         <activity
-            android:name=".FirstGeminiApp"
+            android:name=".MoodActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MainActivity"
             android:exported="false" />
         <activity
             android:name=".EmailVerify"

@@ -82,6 +82,7 @@ public class SignUpActivity extends AppCompatActivity {
                                 if (task.isSuccessful()) {
                                     // Sign up success
                                     sendEmailVerification();
+                                    startActivity(new Intent(SignUpActivity.this, EmailVerify.class));
                                 } else {
                                     // Sign up failed
                                     Toast.makeText(SignUpActivity.this, "Sign up failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();

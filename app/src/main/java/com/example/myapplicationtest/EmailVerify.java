@@ -39,7 +39,7 @@ public class EmailVerify extends AppCompatActivity {
                     if (auth.getCurrentUser().isEmailVerified()) {
                         Toast.makeText(EmailVerify.this, "Is verified", Toast.LENGTH_SHORT).show();
                         cancel();
-                        startActivity(new Intent(EmailVerify.this, FirstGeminiApp.class));
+                        startActivity(new Intent(EmailVerify.this, MainActivity.class));
                         finish();
                     }
 

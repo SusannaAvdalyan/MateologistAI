@@ -1,12 +1,12 @@
 package com.example.myapplicationtest;
 
-public class Message {
+public class MessageClass {
     public static String SENT_BY_ME = "me";
     public static String SENT_BY_BOT="bot";
 
     String message;
     String sentBy;
-    public Message() {
+    public MessageClass() {
         // Default constructor required for Firebase
     }
 
@@ -26,7 +26,7 @@ public class Message {
         this.sentBy = sentBy;
     }
 
-    public Message(String message, String sentBy) {
+    public MessageClass(String message, String sentBy) {
         this.message = message;
         this.sentBy = sentBy;
     }

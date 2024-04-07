@@ -13,8 +13,8 @@ import java.util.List;
 
 public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHolder> {
 
-    List<Message> messageList;
-    public MessageAdapter(List<Message> messageList) {
+    List<MessageClass> messageList;
+    public MessageAdapter(List<MessageClass> messageList) {
         this.messageList = messageList;
     }
 
@@ -28,8 +28,8 @@ public class MessageAdapter extends RecyclerView.Adapter<MessageAdapter.MyViewHo
 
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
-        Message message = messageList.get(position);
-        if(message.getSentBy().equals(Message.SENT_BY_ME)){
+        MessageClass message = messageList.get(position);
+        if(message.getSentBy().equals(MessageClass.SENT_BY_ME)){
             holder.leftChatView.setVisibility(View.GONE);
             holder.rightChatView.setVisibility(View.VISIBLE);
             holder.rightTextView.setText(message.getMessage());

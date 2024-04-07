@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void proceedToNextActivity() {
-        startActivity(new Intent(LoginActivity.this, FirstGeminiApp.class));
+        startActivity(new Intent(LoginActivity.this, MoodActivity.class));
         finish();
     }
 }

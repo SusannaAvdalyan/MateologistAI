@@ -1,26 +1,17 @@
 package com.example.myapplicationtest;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
 import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.ScrollView;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -40,22 +31,21 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
-import java.time.Instant;
-import java.time.ZoneId;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-public class FirstGeminiApp extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity {
 
     private TextToSpeech tts;
     private ImageButton sendQueryButton;
     private TextInputEditText queryEditText;
     private ProgressBar progressBar;
     private ChatFutures chatModel;
-    List<Message> messageList;
+    List<MessageClass> messageList;
     MessageAdapter messageAdapter;
     RecyclerView recyclerView;
 
@@ -102,13 +92,13 @@ public class FirstGeminiApp extends AppCompatActivity {
         });
 
         sendQueryButton.setOnClickListener(v -> {
-            String query = queryEditText.getText().toString() + "Act like your name is Mateo and you are my soulmate, answer short and unformal" ;
+            String query = queryEditText.getText().toString() + "You are my best friend, your name it Mateo, care and help me, answer short and answer only messages coming after this sentence" ;
             String showQuery = queryEditText.getText().toString();
-            addToChat(query, Message.SENT_BY_ME);
+            addToChat(query, MessageClass.SENT_BY_ME);
             queryEditText.setText("");
 
             // Sending user query to the database
-            sendMessageToDatabase(showQuery, Message.SENT_BY_ME);
+            sendMessageToDatabase(showQuery, MessageClass.SENT_BY_ME);
 
             progressBar.setVisibility(View.VISIBLE); // Show progress bar while waiting for AI response
 
@@ -117,14 +107,14 @@ public class FirstGeminiApp extends AppCompatActivity {
                 public void onResponse(String response) {
                     progressBar.setVisibility(View.GONE);
                     tts.speak(response, TextToSpeech.QUEUE_FLUSH, null, null);
-                    addToChat(response, Message.SENT_BY_BOT);
-                    sendMessageToDatabase(response, Message.SENT_BY_BOT);
+                    addToChat(response, MessageClass.SENT_BY_BOT);
+                    sendMessageToDatabase(response, MessageClass.SENT_BY_BOT);
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
                     progressBar.setVisibility(View.GONE);
-                    Toast.makeText(FirstGeminiApp.this, "Error getting response from AI", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Error getting response from AI", Toast.LENGTH_SHORT).show();
                 }
             });
         });
@@ -140,26 +130,29 @@ public class FirstGeminiApp extends AppCompatActivity {
 
     void addToChat(String message, String sentBy) {
         runOnUiThread(() -> {
-            messageList.add(new Message(message, sentBy));
+            messageList.add(new MessageClass(message, sentBy));
             messageAdapter.notifyDataSetChanged();
             recyclerView.smoothScrollToPosition(messageAdapter.getItemCount());
         });
     }
 
-    private static String getDate() {
-        long currentTimeMillis = System.currentTimeMillis();
-        String currentTimeString = String.valueOf(currentTimeMillis);
+    static String getDate() {
+        LocalDateTime currentDateTime = LocalDateTime.now();
 
-        return currentTimeString;
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        String formattedDateTime = currentDateTime.format(formatter);
+
+        return formattedDateTime;
     }
 
     public void sendMessageToDatabase(String text, String sentBy) {
-        Message message = new Message(text, sentBy);
+        MessageClass message = new MessageClass(text, sentBy);
         String deltaTime = getDate();
         DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages").child(deltaTime);
-        messagesRef.setValue(message)
-                .addOnSuccessListener(aVoid -> Toast.makeText(FirstGeminiApp.this, "Message sent to database", Toast.LENGTH_SHORT).show())
-                .addOnFailureListener(e -> Toast.makeText(FirstGeminiApp.this, "Failed to send message to database", Toast.LENGTH_SHORT).show());
+        messagesRef.setValue(message);
+//                .addOnSuccessListener(aVoid -> Toast.makeText(FirstGeminiApp.this, "Message sent to database", Toast.LENGTH_SHORT).show())
+//                .addOnFailureListener(e -> Toast.makeText(FirstGeminiApp.this, "Failed to send message to database", Toast.LENGTH_SHORT).show());
     }
 
 
@@ -185,9 +178,9 @@ public class FirstGeminiApp extends AppCompatActivity {
             public void onDataChange(DataSnapshot dataSnapshot) {
                 messageList.clear(); // Clear existing messages
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Message message = snapshot.getValue(Message.class);
+                    MessageClass message = snapshot.getValue(MessageClass.class);
                     if (message != null) {
-                        Toast.makeText(FirstGeminiApp.this, "Message", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(FirstGeminiApp.this, "Message", Toast.LENGTH_SHORT).show();
                         addToChat(message.getMessage(), message.getSentBy());
                     }
                 }
@@ -196,7 +189,7 @@ public class FirstGeminiApp extends AppCompatActivity {
             @Override
             public void onCancelled(DatabaseError databaseError) {
                 // Handle error
-                Log.e("Firebase", "Error fetching messages", databaseError.toException());
+//                Log.e("Firebase", "Error fetching messages", databaseError.toException());
             }
         });
     }
