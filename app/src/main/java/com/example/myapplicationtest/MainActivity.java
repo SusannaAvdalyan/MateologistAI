@@ -1,5 +1,8 @@
 package com.example.myapplicationtest;
 
+
+import static com.example.myapplicationtest.ChatListActivity.generateUniqueIdForChat;
+
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +10,7 @@ import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
 import android.speech.tts.Voice;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -21,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.ai.client.generativeai.java.ChatFutures;
 import com.google.ai.client.generativeai.java.GenerativeModelFutures;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.textfield.TextInputEditText;
 
 import com.google.firebase.FirebaseApp;
@@ -65,13 +70,13 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);
-        setContentView(R.layout.activity_first_gemini_app);
+        setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
+        String chatId = generateUniqueIdForChat();
         recyclerView = findViewById(R.id.recyclerView);
         messageList = new ArrayList<>();
         chatModel = getChatModel();
@@ -110,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
             queryEditText.setText("");
 
             // Sending user query to the database
-            sendMessageToDatabase(showQuery, MessageClass.SENT_BY_ME);
+            sendMessageToDatabase(chatId, showQuery, MessageClass.SENT_BY_ME);
 
             progressBar.setVisibility(View.VISIBLE); // Show progress bar while waiting for AI response
 
@@ -120,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                     tts.speak(response, TextToSpeech.QUEUE_FLUSH, null, null);
                     addToChat(response, MessageClass.SENT_BY_BOT);
-                    sendMessageToDatabase(response, MessageClass.SENT_BY_BOT);
+                    sendMessageToDatabase(chatId, response, MessageClass.SENT_BY_BOT);
                 }
 
                 @Override
@@ -131,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             });
         });
 
-        retrieveMessagesFromFirebase();
+        retrieveMessagesFromFirebase(chatId);
     }
 
     private ChatFutures getChatModel() {
@@ -148,6 +153,10 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    public void back(View view){
+        startActivity(new Intent(MainActivity.this, ChatListActivity.class));
+    }
+
     static String getDate() {
         LocalDateTime currentDateTime = LocalDateTime.now();
 
@@ -158,12 +167,26 @@ public class MainActivity extends AppCompatActivity {
         return formattedDateTime;
     }
 
-    public void sendMessageToDatabase(String text, String sentBy) {
+    public void getSpeechInput(View view) {
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
+
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivityForResult(intent, 10);
+        } else {
+            Toast.makeText(this, "Your Device Doesn't Support Speech Input", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void sendMessageToDatabase(String chatId, String text, String sentBy) {
         if (currentUserID != null) {
             MessageClass message = new MessageClass(text, sentBy);
             String deltaTime = getDate();
             DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages")
-                    .child(currentUserID) // Save messages under current user's ID
+                    .child(currentUserID)
+                    .child(chatId)
                     .child(deltaTime);
             messagesRef.setValue(message);
         } else {
@@ -187,10 +210,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void retrieveMessagesFromFirebase() {
+    private void retrieveMessagesFromFirebase(String chatId) {
         if (currentUserID != null) {
             DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages")
-                    .child(currentUserID); // Query messages for current user's ID
+                    .child(currentUserID)
+                    .child(chatId); // Query messages for the specified chat ID under current user's ID
             messagesRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
@@ -210,4 +234,5 @@ public class MainActivity extends AppCompatActivity {
             });
         }
     }
+
 }

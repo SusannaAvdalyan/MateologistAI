@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void proceedToNextActivity() {
-        startActivity(new Intent(LoginActivity.this, MoodActivity.class));
+        startActivity(new Intent(LoginActivity.this, ChatListActivity.class));
         finish();
     }
 }

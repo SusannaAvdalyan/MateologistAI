@@ -8,6 +8,17 @@
     android:padding="16dp"
     tools:context=".MainActivity">
 
+    <ImageButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="15dp"
+        android:padding="12dp"
+        android:src="@drawable/baseline_arrow_back_ios_new_24"
+        android:background="@color/white"
+        android:onClick="back"
+        />
+
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="150dp"
@@ -38,7 +49,9 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="wrap_content"
-            android:layout_marginTop="5dp">
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="60dp"
+            >
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/queryEditText"
@@ -87,4 +100,12 @@
         android:layout_marginTop="32dp"
         android:visibility="gone" />
 
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:menu="@menu/bottom_menu" />
+
 </RelativeLayout>
+
