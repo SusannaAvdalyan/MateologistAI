@@ -1,17 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <SearchView
+        android:id="@+id/search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        android:queryHint="Search..."
+        />
+
     <ListView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:id="@+id/listview"
+        app:layout_constraintTop_toBottomOf="@id/search_bar"
+        app:layout_constraintBottom_toTopOf="@id/addButton"
         android:scrollbars="vertical"
-        android:layout_marginTop="12dp"
+        android:paddingLeft="2dp"
+        android:paddingRight="2dp"
         tools:listitem="@layout/list_item"
         android:divider="@android:color/transparent"
         android:dividerHeight="10.0sp"/>
@@ -26,18 +38,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         android:onClick="onAddChatButtonClick"
+        android:elevation="10dp"
+        android:layout_marginBottom="20dp"
         />
-
-<!--    <Button-->
-<!--        android:id="@+id/addChatButton"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:background="@drawable/ai_message_bg"-->
-<!--        android:srcCompat="@drawable/ic_add"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        android:layout_marginBottom="16dp"-->
-<!--        android:onClick="onAddChatButtonClick" />-->
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,10 +6,13 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -28,7 +31,8 @@ public class ChatListActivity extends AppCompatActivity {
     private DatabaseReference chatsRef;
     private ListView chatListView;
     private ChatAdapter adapter;
-    private List<ChatClass> chatList = new ArrayList<>(); // Store chat objects instead of chat names
+    private List<ChatClass> chatList = new ArrayList<>();
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,27 +40,21 @@ public class ChatListActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat_list);
 
         chatsRef = FirebaseDatabase.getInstance().getReference("chats");
-
+        searchView = findViewById(R.id.search_bar);
         chatListView = findViewById(R.id.listview);
-
-        adapter = new ChatAdapter(this, chatList); // Pass chatList to adapter
+        adapter = new ChatAdapter(this, chatList);
         chatListView.setAdapter(adapter);
-
-        // Retrieve existing chats from Firebase
         retrieveChatsFromFirebase();
+        setupSearchView();
 
         chatListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                // Get the chat object from the adapter
+
                 ChatClass chat = adapter.getItem(position);
 
-                // Check if the chat object is not null
                 if (chat != null) {
-                    // Get the chat name
                     String chatName = chat.getChatName();
-
-                    // Open the chat in MainActivity
                     openChat(chatName);
                 }
             }
@@ -64,19 +62,57 @@ public class ChatListActivity extends AppCompatActivity {
 
     }
 
+    private void filter(String query) {
+        List<ChatClass> filteredList = new ArrayList<>();
+        for (ChatClass chat : chatList) {
+            if (chat.getChatName().toLowerCase().contains(query.toLowerCase())) {
+                filteredList.add(chat);
+            }
+        }
+        adapter = new ChatAdapter(this, filteredList);
+        chatListView.setAdapter(adapter);
+    }
+
+    private void setupSearchView() {
+        searchView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                searchView.setIconified(false); // Expand the search view
+                searchView.requestFocus(); // Request focus on the search view
+                InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+                imm.showSoftInput(searchView, InputMethodManager.SHOW_IMPLICIT); // Show the keyboard
+            }
+        });
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                filter(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                filter(newText);
+                return false;
+            }
+        });
+    }
+
+
 
     private void retrieveChatsFromFirebase() {
         chatsRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                chatList.clear(); // Clear existing chat list
+                chatList.clear();
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     ChatClass chat = snapshot.getValue(ChatClass.class);
                     if (chat != null) {
                         chatList.add(chat);
                     }
                 }
-                adapter.notifyDataSetChanged(); // Notify adapter of data change
+                adapter.notifyDataSetChanged();
             }
 
             @Override

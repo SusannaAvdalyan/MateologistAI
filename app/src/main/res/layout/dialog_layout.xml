@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:minWidth="300dp"
+    android:minHeight="100dp"> <!-- Adjust the minHeight to make the dialog taller -->
 
     <TextView
         android:layout_width="match_parent"
@@ -17,20 +20,31 @@
     <com.google.android.material.textfield.TextInputLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter your text">
+        android:hint="Enter your text"
+        app:boxStrokeWidth="2dp"
+        app:boxCornerRadiusTopEnd="8dp"
+        app:boxCornerRadiusTopStart="8dp"
+        app:boxCornerRadiusBottomEnd="8dp"
+        app:boxCornerRadiusBottomStart="8dp"
+        app:boxBackgroundColor="@android:color/transparent">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"/>
 
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/submitButton"
-        android:layout_width="match_parent"
+        android:layout_width="140dp"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/lavender"
         android:text="Submit"
-        style="@style/Widget.MaterialComponents.Button"/>
+        style="@style/Widget.MaterialComponents.Button"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="16dp"
+        android:layout_gravity="center"/>
 
 </LinearLayout>

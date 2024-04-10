@@ -4,26 +4,35 @@
     <item
         android:id="@+id/home"
         android:title="Home"
-        android:icon="@drawable/baseline_home_24"/>
+        android:icon="@drawable/baseline_home_24"
+        android:iconTint="@color/lavender"
+        />
 
     <item
         android:id="@+id/chat"
         android:title="Chat"
-        android:icon="@drawable/baseline_chat_24"/>
+        android:icon="@drawable/baseline_chat_24"
+        android:iconTint="@color/lavender"
+        />
 
     <item
         android:id="@+id/fab"
         android:title=""
-        android:enabled="false"/>
+        android:enabled="false"
+        />
 
     <item
         android:id="@+id/mood"
         android:title="Mood Tracker"
-        android:icon="@drawable/baseline_emoji_emotions_24"/>
+        android:icon="@drawable/baseline_emoji_emotions_24"
+        android:iconTint="@color/lavender"
+        />
 
     <item
         android:id="@+id/settings"
-        android:title="Library"
-        android:icon="@drawable/baseline_settings_24"/>
+        android:title="Settings"
+        android:icon="@drawable/baseline_settings_24"
+        android:iconTint="@color/lavender"
+        />
 
 </menu>
