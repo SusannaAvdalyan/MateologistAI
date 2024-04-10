@@ -35,19 +35,8 @@
             android:layout_marginTop="25dp"
             android:layout_marginStart="30dp"
             android:layout_toEndOf="@id/listImage"
-            android:onClick="openChat"
             />
 
-        <TextView
-            android:layout_width="80dp"
-            android:layout_height="30dp"
-            android:id="@+id/listTime"
-            android:text="date"
-            android:textSize="16sp"
-            android:layout_toEndOf="@id/listName"
-            android:layout_marginTop="25dp"
-            android:layout_marginStart="100dp"
-            android:textColor="@color/lavender"/>
 
     </RelativeLayout>
 

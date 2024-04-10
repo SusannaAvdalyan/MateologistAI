@@ -14,6 +14,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
+        String chatName = getIntent().getStringExtra("chatName");
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
@@ -76,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-        String chatId = generateUniqueIdForChat();
+
         recyclerView = findViewById(R.id.recyclerView);
         messageList = new ArrayList<>();
         chatModel = getChatModel();
@@ -108,6 +110,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
         sendQueryButton.setOnClickListener(v -> {
             String query = queryEditText.getText().toString() + "You are my best friend, your name it Mateo, care and help me, answer short and answer only messages coming after this sentence" ;
             String showQuery = queryEditText.getText().toString();
@@ -115,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
             queryEditText.setText("");
 
             // Sending user query to the database
-            sendMessageToDatabase(chatId, showQuery, MessageClass.SENT_BY_ME);
+            sendMessageToDatabase(chatName, showQuery, MessageClass.SENT_BY_ME);
 
             progressBar.setVisibility(View.VISIBLE); // Show progress bar while waiting for AI response
 
@@ -125,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                     progressBar.setVisibility(View.GONE);
                     tts.speak(response, TextToSpeech.QUEUE_FLUSH, null, null);
                     addToChat(response, MessageClass.SENT_BY_BOT);
-                    sendMessageToDatabase(chatId, response, MessageClass.SENT_BY_BOT);
+                    sendMessageToDatabase(chatName, response, MessageClass.SENT_BY_BOT);
                 }
 
                 @Override
@@ -136,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
             });
         });
 
-        retrieveMessagesFromFirebase(chatId);
+        retrieveMessagesFromFirebase(chatName);
     }
 
     private ChatFutures getChatModel() {
@@ -159,11 +162,8 @@ public class MainActivity extends AppCompatActivity {
 
     static String getDate() {
         LocalDateTime currentDateTime = LocalDateTime.now();
-
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
         String formattedDateTime = currentDateTime.format(formatter);
-
         return formattedDateTime;
     }
 
@@ -180,13 +180,13 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void sendMessageToDatabase(String chatId, String text, String sentBy) {
+    public void sendMessageToDatabase(String chatName, String text, String sentBy) {
         if (currentUserID != null) {
             MessageClass message = new MessageClass(text, sentBy);
             String deltaTime = getDate();
             DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages")
                     .child(currentUserID)
-                    .child(chatId)
+                    .child(chatName)
                     .child(deltaTime);
             messagesRef.setValue(message);
         } else {
@@ -210,15 +210,15 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void retrieveMessagesFromFirebase(String chatId) {
+    private void retrieveMessagesFromFirebase(String chatName) {
         if (currentUserID != null) {
             DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages")
                     .child(currentUserID)
-                    .child(chatId); // Query messages for the specified chat ID under current user's ID
+                    .child(chatName);
             messagesRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
-                    messageList.clear(); // Clear existing messages
+                    messageList.clear();
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         MessageClass message = snapshot.getValue(MessageClass.class);
                         if (message != null) {

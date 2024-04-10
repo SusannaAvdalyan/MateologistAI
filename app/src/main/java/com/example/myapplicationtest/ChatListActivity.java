@@ -1,8 +1,14 @@
 package com.example.myapplicationtest;
 
+import static com.example.myapplicationtest.MainActivity.getDate;
+
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -38,7 +44,26 @@ public class ChatListActivity extends AppCompatActivity {
 
         // Retrieve existing chats from Firebase
         retrieveChatsFromFirebase();
+
+        chatListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                // Get the chat object from the adapter
+                ChatClass chat = adapter.getItem(position);
+
+                // Check if the chat object is not null
+                if (chat != null) {
+                    // Get the chat name
+                    String chatName = chat.getChatName();
+
+                    // Open the chat in MainActivity
+                    openChat(chatName);
+                }
+            }
+        });
+
     }
+
 
     private void retrieveChatsFromFirebase() {
         chatsRef.addValueEventListener(new ValueEventListener() {
@@ -61,13 +86,22 @@ public class ChatListActivity extends AppCompatActivity {
         });
     }
 
-    public void openChat(View view) {
-        startActivity(new Intent(ChatListActivity.this, MainActivity.class));
+
+    public void openChat(String chatName) {
+        Intent intent = new Intent(ChatListActivity.this, MainActivity.class);
+        intent.putExtra("chatName", chatName); // Pass the chat name to MainActivity
+        startActivity(intent);
     }
 
+
     public void onAddChatButtonClick(View view) {
-        String chatId = generateUniqueIdForChat();
-        createNewChat(chatId, "Chatik Nameik");
+        openDialog(new DialogCallback() {
+            @Override
+            public void onDialogSubmit(String userInput) {
+                String date = getDate();
+                createNewChat(date, userInput);
+            }
+        });
     }
 
     public static String generateUniqueIdForChat() {
@@ -75,9 +109,9 @@ public class ChatListActivity extends AppCompatActivity {
         return chatsRef.push().getKey();
     }
 
-    private void createNewChat(String chatId, String chatName) {
-        ChatClass newChat = new ChatClass(chatId, chatName);
-        chatsRef.child(chatId).setValue(newChat)
+    private void createNewChat(String date, String chatName) {
+        ChatClass newChat = new ChatClass(date, chatName);
+        chatsRef.child(chatName).setValue(newChat)
                 .addOnSuccessListener(aVoid -> {
                     // Chat successfully created in Firebase
                     Toast.makeText(ChatListActivity.this, "New chat created", Toast.LENGTH_SHORT).show();
@@ -87,4 +121,30 @@ public class ChatListActivity extends AppCompatActivity {
                     Toast.makeText(ChatListActivity.this, "Failed to create new chat", Toast.LENGTH_SHORT).show();
                 });
     }
+
+    private interface DialogCallback {
+        void onDialogSubmit(String userInput);
+    }
+
+    private void openDialog(final DialogCallback callback) {
+        final Dialog dialog = new Dialog(ChatListActivity.this);
+        dialog.setContentView(R.layout.dialog_layout);
+        dialog.setCancelable(true);
+
+        final EditText editText = dialog.findViewById(R.id.editText);
+        Button submitButton = dialog.findViewById(R.id.submitButton);
+
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String userInput = editText.getText().toString();
+                Toast.makeText(ChatListActivity.this, "Submitted: " + userInput, Toast.LENGTH_SHORT).show();
+                dialog.dismiss();
+                callback.onDialogSubmit(userInput); // Callback with user input
+            }
+        });
+
+        dialog.show();
+    }
+
 }

@@ -1,7 +1,7 @@
 package com.example.myapplicationtest;
 
 public class ChatClass {
-    private String chatId;
+    private String date;
     private String chatName;
 
     // Default constructor (required for Firebase)
@@ -9,18 +9,18 @@ public class ChatClass {
     }
 
     // Constructor
-    public ChatClass(String chatId, String chatName) {
-        this.chatId = chatId;
+    public ChatClass(String date, String chatName) {
+        this.date = date;
         this.chatName = chatName;
     }
 
     // Getters and setters
     public String getChatId() {
-        return chatId;
+        return date;
     }
 
     public void setChatId(String chatId) {
-        this.chatId = chatId;
+        this.date = date;
     }
 
     public String getChatName() {
