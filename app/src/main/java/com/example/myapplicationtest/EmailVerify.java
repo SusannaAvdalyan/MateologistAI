@@ -1,11 +1,11 @@
 package com.example.myapplicationtest;
+
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.os.Handler;
 import android.widget.Toast;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -19,36 +19,20 @@ public class EmailVerify extends AppCompatActivity {
         setContentView(R.layout.activity_email_verify);
 
         auth = FirebaseAuth.getInstance();
-        FirebaseUser User = auth.getCurrentUser();
-        toastEmailOpen();
-    }
+        FirebaseUser user = auth.getCurrentUser();
 
-    private void toastEmailOpen() {
-        Toast.makeText(EmailVerify.this, R.string.if_open_email, Toast.LENGTH_SHORT).show();
-        Handler handler = new Handler();
-        handler.postDelayed(() -> {
-        }, 2000);
-        new CountDownTimer(Integer.MAX_VALUE, 3000) {
-            public void onTick(long millisUntilFinished) {
-                Intent intent = getIntent();
-                String password = "";
-                if(intent!=null){
-                    password = intent.getStringExtra("Password");
+        // Check if user is not null and email is not verified
+        if (user != null && !user.isEmailVerified()) {
+            // Trigger email verification
+            user.sendEmailVerification().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    Toast.makeText(EmailVerify.this, R.string.if_open_email, Toast.LENGTH_SHORT).show();
                 }
-                auth.signInWithEmailAndPassword(auth.getCurrentUser().getEmail(), password).addOnCompleteListener(task -> {
-                    if (auth.getCurrentUser().isEmailVerified()) {
-                        Toast.makeText(EmailVerify.this, "Is verified", Toast.LENGTH_SHORT).show();
-                        cancel();
-                        startActivity(new Intent(EmailVerify.this, MainActivity.class));
-                        finish();
-                    }
-
-                });
-
-            }
-            public void onFinish() {
-            }
-        }.start();
-
+            });
+        } else {
+            // If user is null or email is already verified, proceed to MainActivity
+            startActivity(new Intent(EmailVerify.this, MainActivity.class));
+            finish();
+        }
     }
 }
