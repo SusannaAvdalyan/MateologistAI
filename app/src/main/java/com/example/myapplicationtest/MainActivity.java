@@ -1,8 +1,5 @@
 package com.example.myapplicationtest;
 
-
-import static com.example.myapplicationtest.ChatListActivity.generateUniqueIdForChat;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;

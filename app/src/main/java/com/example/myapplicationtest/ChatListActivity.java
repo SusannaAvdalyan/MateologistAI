@@ -11,12 +11,19 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -38,7 +45,6 @@ public class ChatListActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat_list);
-
         chatsRef = FirebaseDatabase.getInstance().getReference("chats");
         searchView = findViewById(R.id.search_bar);
         chatListView = findViewById(R.id.listview);
@@ -50,16 +56,18 @@ public class ChatListActivity extends AppCompatActivity {
         chatListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 ChatClass chat = adapter.getItem(position);
-
-                if (chat != null) {
-                    String chatName = chat.getChatName();
-                    openChat(chatName);
-                }
+                String chatName = chat.getChatName();
+                openChat(chatName);
             }
         });
 
+    }
+
+    public void more(View view) {
+        Dialog dialog = new Dialog(ChatListActivity.this);
+        dialog.setContentView(R.layout.popup_options);
+        ImageButton deleteButton = dialog.findViewById(R.id.delete_chat);
     }
 
     private void filter(String query) {
@@ -99,8 +107,6 @@ public class ChatListActivity extends AppCompatActivity {
         });
     }
 
-
-
     private void retrieveChatsFromFirebase() {
         chatsRef.addValueEventListener(new ValueEventListener() {
             @Override
@@ -122,13 +128,11 @@ public class ChatListActivity extends AppCompatActivity {
         });
     }
 
-
     public void openChat(String chatName) {
         Intent intent = new Intent(ChatListActivity.this, MainActivity.class);
         intent.putExtra("chatName", chatName); // Pass the chat name to MainActivity
         startActivity(intent);
     }
-
 
     public void onAddChatButtonClick(View view) {
         openDialog(new DialogCallback() {
@@ -182,5 +186,4 @@ public class ChatListActivity extends AppCompatActivity {
 
         dialog.show();
     }
-
 }
