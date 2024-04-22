@@ -4,12 +4,19 @@ import static com.example.myapplicationtest.R.id.bottom_navigation;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+
+
+
 
 public class SettingsActivity extends AppCompatActivity {
+    private FirebaseAuth auth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +43,17 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             }
             return false;
+        });
+
+        LinearLayout linearLayout = findViewById(R.id.logoutLayout);
+        auth = FirebaseAuth.getInstance();
+        linearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                auth.signOut();
+                startActivity(new Intent(SettingsActivity.this, LoginActivity.class));
+                finish();
+            }
         });
 
     }
