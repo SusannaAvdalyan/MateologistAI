@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     List<MessageClass> messageList;
     MessageAdapter messageAdapter;
     RecyclerView recyclerView;
-    private FirebaseAuth mAuth; // Firebase authentication reference
+    private FirebaseAuth mAuth;
     private String currentUserID;
 
     @SuppressLint("MissingInflatedId")
@@ -66,6 +66,28 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser != null) {
             currentUserID = currentUser.getUid();
         }
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.chat);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.chat) {
+                return true;
+            } else if (itemId == R.id.mood) {
+                startActivity(new Intent(getApplicationContext(), MoodActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.home) {
+                startActivity(new Intent(getApplicationContext(), ChatListActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.settings) {
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                finish();
+                return true;
+            }
+            return false;
+        });
 
         super.onCreate(savedInstanceState);
         FirebaseApp.initializeApp(this);

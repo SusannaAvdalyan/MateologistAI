@@ -36,12 +36,10 @@ public class LoginActivity extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
         signupRedirectText = findViewById(R.id.signupRedirect);
 
-        // Check if the user is already signed in
         FirebaseUser currentUser = auth.getCurrentUser();
         if (currentUser != null && currentUser.isEmailVerified()) {
-            // User is already signed in and email is verified
             proceedToNextActivity();
-            return; // Exit onCreate method to prevent further execution
+            return;
         }
 
         loginButton.setOnClickListener(new View.OnClickListener() {

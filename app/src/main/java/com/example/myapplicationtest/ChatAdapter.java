@@ -47,7 +47,6 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
         TextView chatNameTextView = listItem.findViewById(R.id.listName);
         chatNameTextView.setText(currentChat.getChatName());
 
-        // Handle more options button click
         ImageView btnMoreOptions = listItem.findViewById(R.id.moreBtn);
         btnMoreOptions.setOnClickListener(v -> {
             // Show options popup window when more options button is clicked
