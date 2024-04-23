@@ -15,6 +15,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -24,6 +26,8 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
 
     private Context mContext;
     private List<ChatClass> mChatList;
+    private String currentUserID;
+    private FirebaseAuth mAuth;
 
     public ChatAdapter(Context context, List<ChatClass> chatList) {
         super(context, 0, chatList);
@@ -71,20 +75,25 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
 
     // Method to delete chat
     private void deleteChat(ChatClass chat) {
-        // Remove chat from the local list
+        MessageClass message = new MessageClass();
         mChatList.remove(chat);
         notifyDataSetChanged();
 
-        // Remove chat from Firebase database
         DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("chats").child(chat.getChatName());
         chatRef.removeValue()
                 .addOnSuccessListener(aVoid -> {
-                    // Chat successfully deleted from Firebase
                     Toast.makeText(mContext, "Chat deleted", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    // Failed to delete chat from Firebase
                     Toast.makeText(mContext, "Failed to delete chat", Toast.LENGTH_SHORT).show();
                 });
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        currentUserID = currentUser.getUid();
+        DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages")
+                .child(currentUserID)
+                .child(chat.getChatName());
+        messagesRef.removeValue();
+
     }
 }

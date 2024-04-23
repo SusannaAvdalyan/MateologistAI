@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         String chatName = getIntent().getStringExtra("chatName");
         mAuth = FirebaseAuth.getInstance();
@@ -66,37 +68,6 @@ public class MainActivity extends AppCompatActivity {
         if (currentUser != null) {
             currentUserID = currentUser.getUid();
         }
-
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.chat);
-        bottomNavigationView.setOnItemSelectedListener(item -> {
-            int itemId = item.getItemId();
-            if (itemId == R.id.chat) {
-                return true;
-            } else if (itemId == R.id.mood) {
-                startActivity(new Intent(getApplicationContext(), MoodActivity.class));
-                finish();
-                return true;
-            } else if (itemId == R.id.home) {
-                startActivity(new Intent(getApplicationContext(), ChatListActivity.class));
-                finish();
-                return true;
-            } else if (itemId == R.id.settings) {
-                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
-                finish();
-                return true;
-            }
-            return false;
-        });
-
-        super.onCreate(savedInstanceState);
-        FirebaseApp.initializeApp(this);
-        setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
 
         recyclerView = findViewById(R.id.recyclerView);
         messageList = new ArrayList<>();
@@ -107,7 +78,6 @@ public class MainActivity extends AppCompatActivity {
         queryEditText = findViewById(R.id.queryEditText);
         messageAdapter = new MessageAdapter(messageList);
         recyclerView.setAdapter(messageAdapter);
-
 
         tts = new TextToSpeech(this, status -> {
             if (status == TextToSpeech.SUCCESS) {
@@ -131,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         sendQueryButton.setOnClickListener(v -> {
-            String query = queryEditText.getText().toString() + "You are my best friend, your name it Mateo, care and help me, answer short and answer only messages coming after this sentence" ;
+            String query = queryEditText.getText().toString() + "You are an AI friend named Mateo, designed to provide emotional support and helpful advice. Please respond with empathy and understanding, focusing on providing practical solutions and engaging in friendly conversation. Avoid discussing sensitive topics or giving lengthy responses.";
             String showQuery = queryEditText.getText().toString();
             addToChat(query, MessageClass.SENT_BY_ME);
             queryEditText.setText("");
@@ -200,12 +170,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void sendMessageToDatabase(String chatName, String text, String sentBy) {
+        ChatClass chat = new ChatClass(getDate(), chatName);
+        DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("chats").child(chat.getChatName());
         if (currentUserID != null) {
             MessageClass message = new MessageClass(text, sentBy);
             String deltaTime = getDate();
             DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages")
                     .child(currentUserID)
-                    .child(chatName)
+                    .child(chat.getChatName())
                     .child(deltaTime);
             messagesRef.setValue(message);
         } else {

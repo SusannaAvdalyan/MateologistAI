@@ -18,6 +18,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -34,6 +36,8 @@ public class ChatListActivity extends AppCompatActivity {
     private ChatAdapter adapter;
     private List<ChatClass> chatList = new ArrayList<>();
     private SearchView searchView;
+    private String currentUserID;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,9 +48,13 @@ public class ChatListActivity extends AppCompatActivity {
         chatListView = findViewById(R.id.listview);
         adapter = new ChatAdapter(this, chatList);
         chatListView.setAdapter(adapter);
-        retrieveChatsFromFirebase();
+
         setupSearchView();
 
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        currentUserID = currentUser.getUid();
+        retrieveChatsFromFirebase(currentUserID);
 
         chatListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -62,10 +70,6 @@ public class ChatListActivity extends AppCompatActivity {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.home) {
-                return true;
-            } else if (itemId == R.id.chat) {
-                startActivity(new Intent(getApplicationContext(), MainActivity.class));
-                finish();
                 return true;
             } else if (itemId == R.id.mood) {
                 startActivity(new Intent(getApplicationContext(), MoodActivity.class));
@@ -125,8 +129,8 @@ public class ChatListActivity extends AppCompatActivity {
         });
     }
 
-    private void retrieveChatsFromFirebase() {
-        chatsRef.addValueEventListener(new ValueEventListener() {
+    private void retrieveChatsFromFirebase(String userID) {
+        chatsRef.child(userID).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 chatList.clear();
@@ -145,6 +149,7 @@ public class ChatListActivity extends AppCompatActivity {
             }
         });
     }
+
 
     public void openChat(String chatName) {
         Intent intent = new Intent(ChatListActivity.this, MainActivity.class);
@@ -169,7 +174,8 @@ public class ChatListActivity extends AppCompatActivity {
 
     private void createNewChat(String date, String chatName) {
         ChatClass newChat = new ChatClass(date, chatName);
-        chatsRef.child(chatName).setValue(newChat)
+
+        chatsRef.child(currentUserID).child(chatName).setValue(newChat)
                 .addOnSuccessListener(aVoid -> {
                     // Chat successfully created in Firebase
                     Toast.makeText(ChatListActivity.this, "New chat created", Toast.LENGTH_SHORT).show();
