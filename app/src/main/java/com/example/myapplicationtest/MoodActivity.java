@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -25,6 +27,8 @@ public class MoodActivity extends AppCompatActivity {
     private TextView textView;
     private SeekBar seekBar;
     private Button submitButton;
+    private String currentUserID;
+    private FirebaseAuth mAuth;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +39,9 @@ public class MoodActivity extends AppCompatActivity {
         textView = findViewById(R.id.textView);
         seekBar = findViewById(R.id.seekBar);
         submitButton = findViewById(R.id.submitButton);
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        currentUserID = currentUser.getUid();
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.mood);
@@ -61,7 +68,6 @@ public class MoodActivity extends AppCompatActivity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                // Change image and text based on seek bar progress
                 updateImageAndText(progress);
             }
 
@@ -82,7 +88,7 @@ public class MoodActivity extends AppCompatActivity {
                 String mood = textView.getText().toString();
                 String date = getCurrentDateTime();
                 sendMoodToDatabase(mood, date);
-                startActivity(new Intent(MoodActivity.this, MainActivity.class));
+                startActivity(new Intent(MoodActivity.this, AdvicesActivity.class));
             }
         });
 
@@ -117,7 +123,9 @@ public class MoodActivity extends AppCompatActivity {
     public void sendMoodToDatabase(String mood, String date) {
         MoodClass moodData = new MoodClass(mood);
         String deltaTime = getDate();
-        DatabaseReference moodRef = FirebaseDatabase.getInstance().getReference("moods").child(deltaTime);
+        DatabaseReference moodRef = FirebaseDatabase.getInstance().getReference("moods")
+                .child(currentUserID)
+                .child(deltaTime);
         moodRef.setValue(moodData);
     }
 

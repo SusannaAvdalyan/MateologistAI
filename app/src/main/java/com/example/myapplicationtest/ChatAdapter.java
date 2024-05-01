@@ -30,6 +30,7 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
     private FirebaseAuth mAuth;
 
     public ChatAdapter(Context context, List<ChatClass> chatList) {
+
         super(context, 0, chatList);
         mContext = context;
         mChatList = chatList;
@@ -78,8 +79,13 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
         MessageClass message = new MessageClass();
         mChatList.remove(chat);
         notifyDataSetChanged();
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        currentUserID = currentUser.getUid();
 
-        DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("chats").child(chat.getChatName());
+        DatabaseReference chatRef = FirebaseDatabase.getInstance().getReference("chats")
+                .child(currentUserID)
+                .child(chat.getChatName());
         chatRef.removeValue()
                 .addOnSuccessListener(aVoid -> {
                     Toast.makeText(mContext, "Chat deleted", Toast.LENGTH_SHORT).show();
@@ -87,9 +93,6 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
                 .addOnFailureListener(e -> {
                     Toast.makeText(mContext, "Failed to delete chat", Toast.LENGTH_SHORT).show();
                 });
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        currentUserID = currentUser.getUid();
         DatabaseReference messagesRef = FirebaseDatabase.getInstance().getReference("messages")
                 .child(currentUserID)
                 .child(chat.getChatName());

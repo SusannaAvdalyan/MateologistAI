@@ -45,9 +45,10 @@
             android:layout_height="wrap_content"
             android:src="@drawable/baseline_more_vert_24"
             android:backgroundTint="@color/white"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="15dp"
             android:layout_toEndOf="@+id/listName"
             android:layout_marginStart="80dp"
+            android:padding="15dp"
             />
     </RelativeLayout>
 
