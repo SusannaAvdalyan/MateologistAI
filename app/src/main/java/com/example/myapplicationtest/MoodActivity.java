@@ -3,14 +3,20 @@ import static com.example.myapplicationtest.MainActivity.getDate;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.speech.tts.TextToSpeech;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.ai.client.generativeai.java.ChatFutures;
+import com.google.ai.client.generativeai.java.GenerativeModelFutures;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -27,21 +33,27 @@ public class MoodActivity extends AppCompatActivity {
     private TextView textView;
     private SeekBar seekBar;
     private Button submitButton;
-    private String currentUserID;
+    private String currentUserID, moodEditText;
     private FirebaseAuth mAuth;
+    private EditText moodText;
+    private ChatFutures chatModel;
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mood);
 
+        moodText = findViewById(R.id.moodTextInput);
         imageView = findViewById(R.id.imageView);
-        textView = findViewById(R.id.textView);
+        textView = findViewById(R.id.textViewFeeling);
         seekBar = findViewById(R.id.seekBar);
         submitButton = findViewById(R.id.submitButton);
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         currentUserID = currentUser.getUid();
+        chatModel = getChatModel();
+        progressBar = findViewById(R.id.sendPromptProgressBar);
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.mood);
@@ -65,6 +77,7 @@ public class MoodActivity extends AppCompatActivity {
             return false;
         });
 
+
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -85,13 +98,32 @@ public class MoodActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                String query = "What can I do if I feel like " + moodEditText + ". Give unique and short answers with empathy according to my situation. Don't send the same typical text everytime";
                 String mood = textView.getText().toString();
-                String date = getCurrentDateTime();
-                sendMoodToDatabase(mood, date);
-                startActivity(new Intent(MoodActivity.this, AdvicesActivity.class));
+                sendMoodToDatabase(mood, moodText.getText().toString());
+                GeminiPro.getResponse(chatModel, query, new ResponseCallback() {
+                    @Override
+                    public void onResponse(String response) {
+                        Intent intent = new Intent(MoodActivity.this, AdvicesActivity.class);
+                        intent.putExtra("advice", response);
+                        startActivity(intent);
+                        progressBar.setVisibility(View.GONE);
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(MoodActivity.this, "Error getting response from AI", Toast.LENGTH_SHORT).show();
+                    }
+                });
+//                startActivity(new Intent(MoodActivity.this, AdvicesActivity.class));
             }
         });
-
+    }
+    private ChatFutures getChatModel() {
+        GeminiPro model = new GeminiPro();
+        GenerativeModelFutures modelFutures = model.getModel();
+        return modelFutures.startChat();
     }
 
     private void updateImageAndText(int progress) {
@@ -120,13 +152,13 @@ public class MoodActivity extends AppCompatActivity {
         }
     }
 
-    public void sendMoodToDatabase(String mood, String date) {
-        MoodClass moodData = new MoodClass(mood);
+    public void sendMoodToDatabase(String mood, String moodText) {
+        MoodClass moodData = new MoodClass(mood, moodText);
         String deltaTime = getDate();
         DatabaseReference moodRef = FirebaseDatabase.getInstance().getReference("moods")
                 .child(currentUserID)
                 .child(deltaTime);
-        moodRef.setValue(moodData);
+        moodRef.setValue(moodData, moodText);
     }
 
     private String getCurrentDateTime() {

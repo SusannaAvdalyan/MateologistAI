@@ -1,20 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:paddingStart="16dp"
+    android:paddingEnd="16dp"
     tools:context=".AdvicesActivity">
+
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="advice"
-        android:layout_gravity="center"
-        android:layout_marginStart="50dp"
-        android:textSize="50dp"
+        android:text="Here are some advices"
+        android:textSize="24sp"
+        android:layout_marginStart="30dp"
+        android:layout_marginEnd="30dp"
+        android:layout_marginTop="50dp"
+        android:textColor="@android:color/holo_purple"
+        android:textStyle="italic"
+        tools:ignore="HardcodedText" />
 
-        />
+    <TextView
+        android:id="@+id/adviceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        android:textSize="20sp"
+        android:textColor="@android:color/holo_blue_dark"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        tools:text="Here is some advice" />
+
+
 
 </LinearLayout>
