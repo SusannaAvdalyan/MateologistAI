@@ -42,8 +42,8 @@ public class SignUpActivity extends AppCompatActivity {
         if (currentUser != null && currentUser.isEmailVerified()) {
             // User is already signed in and email is verified
             proceedToNextActivity();
-            return; // Exit onCreate method to prevent further execution
         }
+
 
         signupButton.setOnClickListener(new View.OnClickListener() {
             @Override

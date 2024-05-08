@@ -98,7 +98,7 @@ public class MoodActivity extends AppCompatActivity {
         submitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String query = "What can I do if I feel like " + moodEditText + ". Give unique and short answers with empathy according to my situation. Don't send the same typical text everytime";
+                String query = "Hey, you're my best friend and I really value your input. Could you please provide suggestions based on the mood I'm expressing in my texts? Just send your suggestions and nothing more, don't make them too short or too long. Thanks!" + moodText;
                 String mood = textView.getText().toString();
                 sendMoodToDatabase(mood, moodText.getText().toString());
                 GeminiPro.getResponse(chatModel, query, new ResponseCallback() {

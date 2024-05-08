@@ -20,14 +20,14 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center_horizontal"
-            android:padding="24dp"
-            android:background="@drawable/custom_edittext">
+            android:padding="24dp">
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Login"
                 android:textSize="36dp"
                 android:textAlignment="center"
+                android:fontFamily="sans-serif-condensed-medium"
                 android:textStyle="bold"
                 android:textColor="@color/lavender"/>
             <EditText
@@ -36,7 +36,6 @@
                 android:id="@+id/login_email"
                 android:inputType="textEmailSubject"
                 android:scrollHorizontally="true"
-                android:background="@drawable/custom_edittext"
                 android:layout_marginTop="40dp"
                 android:padding="8dp"
                 android:hint="Email"
@@ -48,7 +47,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="50dp"
                 android:id="@+id/login_password"
-                android:background="@drawable/custom_edittext"
                 android:layout_marginTop="40dp"
                 android:padding="8dp"
                 android:hint="Password"
@@ -72,7 +70,8 @@
                 android:layout_gravity="center"
                 android:padding="8dp"
                 android:layout_marginTop="10dp"
-                android:textColor="@color/lavender"
+                android:textColor="#655A7C"
+                android:fontFamily="sans-serif"
                 android:textSize="18sp"/>
         </LinearLayout>
     </androidx.cardview.widget.CardView>

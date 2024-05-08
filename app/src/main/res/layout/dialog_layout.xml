@@ -4,14 +4,16 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="@drawable/round_corner"
     android:padding="16dp"
     android:minWidth="300dp"
-    android:minHeight="100dp"> <!-- Adjust the minHeight to make the dialog taller -->
+    android:minHeight="100dp">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Write your chat's name"
+        android:fontFamily="sans-serif-condensed-medium"
         android:textColor="@android:color/black"
         android:textSize="16sp"
         android:gravity="center_horizontal"
@@ -42,6 +44,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/lavender"
         android:text="Submit"
+        app:cornerRadius="15dp"
         style="@style/Widget.MaterialComponents.Button"
         android:textColor="@android:color/white"
         android:layout_marginTop="16dp"

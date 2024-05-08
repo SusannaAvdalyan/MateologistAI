@@ -27,6 +27,7 @@
             android:layout_height="wrap_content"
             android:text="Logout"
             android:textSize="20dp"
+            android:fontFamily="sans-serif-condensed-medium"
             android:layout_marginTop="15dp"
             android:layout_marginStart="8dp"/>
     </LinearLayout>
@@ -36,6 +37,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        app:itemTextColor="#655A7C"
+        app:itemIconTint="#655A7C"
         app:menu="@menu/bottom_menu" />
 
 </RelativeLayout>

@@ -39,7 +39,6 @@ public class LoginActivity extends AppCompatActivity {
         FirebaseUser currentUser = auth.getCurrentUser();
         if (currentUser != null && currentUser.isEmailVerified()) {
             proceedToNextActivity();
-            return;
         }
 
         loginButton.setOnClickListener(new View.OnClickListener() {

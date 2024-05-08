@@ -9,11 +9,17 @@
     <SearchView
         android:id="@+id/search_bar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="60dp"
         android:layout_alignParentTop="true"
-        android:queryHint="Search..." />
+        android:queryHint="Search..."
+        android:iconifiedByDefault="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="#A9A9A9"/>
 
     <ListView
+        android:layout_marginTop="30dp"
         android:id="@+id/listview"
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -23,6 +29,7 @@
         android:paddingLeft="2dp"
         android:paddingRight="2dp"
         tools:listitem="@layout/list_item"
+        android:elevation="100dp"
         android:divider="@android:color/transparent"
         android:dividerHeight="10.0sp" />
 
@@ -43,6 +50,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        app:itemTextColor="#655A7C"
+        app:itemIconTint="#655A7C"
         app:menu="@menu/bottom_menu" />
 
 </RelativeLayout>

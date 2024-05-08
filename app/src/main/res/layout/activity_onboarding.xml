@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".OnboardingActivity"
+    android:orientation="vertical"
+    android:gravity="center_horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mateologist"
+        android:layout_marginTop="50dp"
+        android:textSize="36sp"
+        android:textColor="@color/lavender"
+        android:textStyle="bold"
+        android:elevation="8dp"
+        android:fontFamily="sans-serif-condensed"
+        />
+
+    <ImageView
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:src="@drawable/appchar"
+        android:scaleType="fitCenter"
+        android:elevation="4dp"
+        android:layout_marginTop="30dp"
+        />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Hello, I'm Mateo, and I'm here to guide you through your journey to better mental health."
+        android:layout_marginRight="30dp"
+        android:layout_marginLeft="30dp"
+        android:textSize="20sp"
+        android:textColor="#655A7C"
+        android:gravity="center"
+        android:layout_marginTop="30dp"
+        android:fontFamily="sans-serif-condensed-medium"
+        />
+
+    <Button
+        android:id="@+id/signupRedirect"
+        android:layout_width="190dp"
+        android:layout_height="60dp"
+        android:text="Get Started"
+        android:textSize="17dp"
+        android:layout_marginTop="50dp"
+        app:cornerRadius="20dp"
+        android:backgroundTint="@color/lavender"/>
+
+    <TextView
+        android:id="@+id/loginRedirect"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Already a user? Login"
+        android:layout_gravity="center"
+        android:padding="8dp"
+        android:layout_marginTop="10dp"
+        android:textColor="#655A7C"
+        android:fontFamily="sans-serif"
+        android:textSize="18sp"/>
+
+</LinearLayout>
