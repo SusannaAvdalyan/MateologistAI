@@ -26,16 +26,14 @@
         android:layout_height="wrap_content"
         android:text="Here are some advices"
         android:textSize="24sp"
-        android:textColor="@color/lavender"
+        android:textColor="#655A7C"
         android:textStyle="italic"
         android:layout_marginTop="30dp"
         android:layout_marginStart="40dp"
         android:layout_marginEnd="30dp"
         android:gravity="center_horizontal"
-        android:layout_top="@id/adviceTextView"
+        android:layout_below="@id/adviceTextView"
         tools:ignore="HardcodedText" />
-
-
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
