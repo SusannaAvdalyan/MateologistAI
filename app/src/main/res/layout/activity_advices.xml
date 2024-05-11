@@ -11,19 +11,6 @@
         android:id="@+id/adviceTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="#655A7C"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        android:gravity="center_horizontal"
-        android:layout_marginTop="80dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        tools:text="Here is some advice" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:text="Here are some advices"
         android:textSize="24sp"
         android:textColor="#655A7C"
@@ -32,8 +19,23 @@
         android:layout_marginStart="40dp"
         android:layout_marginEnd="30dp"
         android:gravity="center_horizontal"
-        android:layout_below="@id/adviceTextView"
         tools:ignore="HardcodedText" />
+
+    <TextView
+        android:layout_below="@id/adviceTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:textColor="#655A7C"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_marginStart="40dp"
+        android:layout_marginEnd="40dp"
+        tools:text="Here is some advice" />
+
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"

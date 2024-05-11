@@ -49,7 +49,6 @@ public class AdvicesActivity extends AppCompatActivity {
         });
 
         String advice = getIntent().getStringExtra("advice");
-
         TextView adviceTextView = findViewById(R.id.adviceTextView);
         adviceTextView.setText(advice);
 
