@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -26,6 +27,7 @@ import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.ai.client.generativeai.java.ChatFutures;
 import com.google.ai.client.generativeai.java.GenerativeModelFutures;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
@@ -92,6 +94,7 @@ public class MoodActivity extends AppCompatActivity {
                 String query = "Hey, you're my best friend and I really, value your input. Could you please provide suggestions based on the mood I'm expressing in my texts? Just send your suggestions and nothing more, don't make them too short or too long. Thanks!" + moodText.getText().toString();
                 String mood = textView.getText().toString();
                 sendMoodToDatabase(progress, moodText.getText().toString());
+                progressBar.setVisibility(View.VISIBLE);
                 GeminiPro.getResponse(chatModel, query, new ResponseCallback() {
                     @Override
                     public void onResponse(String response) {
@@ -111,6 +114,33 @@ public class MoodActivity extends AppCompatActivity {
         });
 
         retrieveMoodsFromDatabase();
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.mood);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.mood) {
+                return true;
+            } else if (itemId == R.id.home) {
+                startActivity(new Intent(getApplicationContext(), MoodActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.settings) {
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                finish();
+                return true;
+            }
+            return false;
+        });
+        ImageButton backBtn = findViewById(R.id.back);
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MoodActivity.this, ChatListActivity.class);
+                startActivity(intent);
+            }
+        });
+
     }
 
     private ChatFutures getChatModel() {

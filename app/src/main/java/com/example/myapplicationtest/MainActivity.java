@@ -101,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         sendQueryButton.setOnClickListener(v -> {
-            String query = queryEditText.getText().toString() + "You are an AI friend named Mateo, designed to provide emotional support and helpful advice. Please respond with empathy and understanding, focusing on providing practical solutions and engaging in friendly conversation. Avoid discussing sensitive topics or giving lengthy responses.";
+            String query = queryEditText.getText().toString() + "You are an AI friend named Mateo, designed to provide emotional support and helpful advice. Please respond with empathy and understanding and SHORT ANSWERS, focusing on providing practical solutions and engaging in friendly conversation. Avoid discussing sensitive topics and giving lengthy responses.";
             String showQuery = queryEditText.getText().toString();
             addToChat(query, MessageClass.SENT_BY_ME);
             queryEditText.setText("");

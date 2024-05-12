@@ -2,6 +2,8 @@ package com.example.myapplicationtest;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
@@ -14,6 +16,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 public class AdvicesActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,8 +27,7 @@ public class AdvicesActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-
+        ImageButton backBtn = findViewById(R.id.back);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.mood);
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -51,6 +53,15 @@ public class AdvicesActivity extends AppCompatActivity {
         String advice = getIntent().getStringExtra("advice");
         TextView adviceTextView = findViewById(R.id.adviceTextView);
         adviceTextView.setText(advice);
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(AdvicesActivity.this, MoodActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
     }
 }
