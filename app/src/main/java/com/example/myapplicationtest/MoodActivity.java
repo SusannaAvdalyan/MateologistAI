@@ -72,9 +72,7 @@ public class MoodActivity extends AppCompatActivity {
         currentUserID = currentUser.getUid();
         moodRef = FirebaseDatabase.getInstance().getReference().child("moods").child(currentUserID);
         progressBar = findViewById(R.id.sendPromptProgressBar);
-        barChart = findViewById(R.id.barChart);
 
-        // Set up SeekBar listener to update image and text
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -113,34 +111,31 @@ public class MoodActivity extends AppCompatActivity {
             }
         });
 
-        retrieveMoodsFromDatabase();
-
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.mood);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.mood) {
                 return true;
+            } else if (itemId == R.id.chat) {
+                startActivity(new Intent(getApplicationContext(), AdvicesActivity.class));
+                finish();
+                return true;
             } else if (itemId == R.id.home) {
-                startActivity(new Intent(getApplicationContext(), MoodActivity.class));
+                startActivity(new Intent(getApplicationContext(), ChatListActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.settings) {
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 finish();
                 return true;
+            } else if (itemId == R.id.mood) {
+                startActivity(new Intent(getApplicationContext(), MoodActivity.class));
+                finish();
+                return true;
             }
             return false;
         });
-        ImageButton backBtn = findViewById(R.id.back);
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(MoodActivity.this, ChatListActivity.class);
-                startActivity(intent);
-            }
-        });
-
     }
 
     private ChatFutures getChatModel() {
@@ -186,121 +181,5 @@ public class MoodActivity extends AppCompatActivity {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd", Locale.getDefault());
         Date date = new Date();
         return dateFormat.format(date);
-    }
-
-    private void retrieveMoodsFromDatabase() {
-        moodRef.limitToLast(5).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                ArrayList<BarEntry> entries = new ArrayList<>();
-                ArrayList<String> dates = new ArrayList<>();
-                HashSet<String> uniqueDates = new HashSet<>(); // HashSet to store unique dates
-
-                for (DataSnapshot dateSnapshot : dataSnapshot.getChildren()) {
-                    String date = dateSnapshot.getKey();
-
-                    if (!uniqueDates.contains(date)) { // Check if the date is already added
-                        uniqueDates.add(date); // Add date to HashSet
-                        int totalMoodLevel = 0;
-                        int moodCount = 0;
-                        for (DataSnapshot moodSnapshot : dateSnapshot.getChildren()) {
-                            totalMoodLevel += moodSnapshot.child("moodLevel").getValue(Integer.class);
-                            moodCount++;
-                        }
-                        float averageMoodLevel = (float) totalMoodLevel / moodCount;
-                        entries.add(new BarEntry(entries.size(), averageMoodLevel));
-                        dates.add(date);
-                    }
-                }
-                displayBarChart(entries, dates);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(MoodActivity.this, "Failed to retrieve mood data: " + databaseError.getMessage(), Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
-
-
-
-    private void displayBarChart(ArrayList<BarEntry> entries, ArrayList<String> dates) {
-        BarDataSet dataSet = new BarDataSet(entries, "Mood Levels");
-        dataSet.setColors(getMoodColors(entries));
-        BarData barData = new BarData(dataSet);
-        barChart.setData(barData);
-        barChart.getDescription().setEnabled(false);
-        barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
-        barChart.getAxisLeft().setDrawGridLines(false);
-        barChart.getAxisRight().setEnabled(false);
-        barChart.getLegend().setEnabled(false);
-        barChart.invalidate();
-        barChart.getAxisRight().setDrawGridLines(false);
-
-        XAxis xAxis = barChart.getXAxis();
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(dates));
-    }
-
-
-    private void drawEmojisOnBars(ArrayList<BarEntry> entries) {
-        for (int i = 0; i < entries.size(); i++) {
-            float x = entries.get(i).getX();
-            float y = entries.get(i).getY();
-            int emojiResId = getEmojiResId(y);
-            drawEmojiOnBar(x, y, emojiResId);
-        }
-    }
-
-    private void drawEmojiOnBar(float x, float y, int emojiResId) {
-        float iconSize = 80f; // Adjust the size as needed
-        float posX = x - iconSize / 2;
-        float posY = y;
-        ImageView imageView = new ImageView(this);
-        imageView.setImageResource(emojiResId);
-        imageView.measure(View.MeasureSpec.UNSPECIFIED, View.MeasureSpec.UNSPECIFIED);
-        imageView.setX(posX);
-        imageView.setY(posY);
-        imageView.setLayoutParams(new ViewGroup.LayoutParams((int) iconSize, (int) iconSize));
-        barChart.addView(imageView);
-    }
-
-    private int getEmojiResId(float moodLevel) {
-        // Determine emoji based on mood level
-        if (moodLevel >= 4) {
-            return R.drawable.amazing;
-        } else if (moodLevel >= 3) {
-            return R.drawable.happy;
-        } else if (moodLevel >= 2) {
-            return R.drawable.nervous;
-        } else if (moodLevel >= 1) {
-            return R.drawable.upset;
-        } else {
-            return R.drawable.sad;
-        }
-    }
-
-    private int[] getMoodColors(ArrayList<BarEntry> entries) {
-        int[] colors = new int[entries.size()];
-        for (int i = 0; i < entries.size(); i++) {
-            float moodLevel = entries.get(i).getY();
-            colors[i] = getMoodColor(moodLevel);
-        }
-        return colors;
-    }
-
-    private int getMoodColor(float moodLevel) {
-        // Customize colors based on mood level
-        if (moodLevel >= 4) {
-            return Color.rgb(255, 193, 7); // Yellow
-        } else if (moodLevel >= 3) {
-            return Color.rgb(76, 175, 80); // Green
-        } else if (moodLevel >= 2) {
-            return Color.rgb(33, 150, 243); // Blue
-        } else if (moodLevel >= 1) {
-            return Color.rgb(255, 87, 34); // Orange
-        } else {
-            return Color.rgb(233, 30, 99); // Pink
-        }
     }
 }

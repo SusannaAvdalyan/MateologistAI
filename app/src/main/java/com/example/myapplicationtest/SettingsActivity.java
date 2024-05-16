@@ -29,8 +29,8 @@ public class SettingsActivity extends AppCompatActivity {
             int itemId = item.getItemId();
             if (itemId == R.id.settings) {
                 return true;
-            } else if (itemId == R.id.mood) {
-                startActivity(new Intent(getApplicationContext(), MoodActivity.class));
+            } else if (itemId == R.id.chat) {
+                startActivity(new Intent(getApplicationContext(), AdvicesActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.home) {
@@ -39,6 +39,10 @@ public class SettingsActivity extends AppCompatActivity {
                 return true;
             } else if (itemId == R.id.settings) {
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.mood) {
+                startActivity(new Intent(getApplicationContext(), MoodActivity.class));
                 finish();
                 return true;
             }

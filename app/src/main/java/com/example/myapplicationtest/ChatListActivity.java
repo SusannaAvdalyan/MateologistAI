@@ -71,12 +71,20 @@ public class ChatListActivity extends AppCompatActivity {
             int itemId = item.getItemId();
             if (itemId == R.id.home) {
                 return true;
-            } else if (itemId == R.id.mood) {
-                startActivity(new Intent(getApplicationContext(), MoodActivity.class));
+            } else if (itemId == R.id.chat) {
+                startActivity(new Intent(getApplicationContext(), AdvicesActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.home) {
+                startActivity(new Intent(getApplicationContext(), ChatListActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.settings) {
                 startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.mood) {
+                startActivity(new Intent(getApplicationContext(), MoodActivity.class));
                 finish();
                 return true;
             }
