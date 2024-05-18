@@ -10,8 +10,8 @@
 
     <item
         android:id="@+id/chat"
-        android:title="Chat"
-        android:icon="@drawable/baseline_chat_24"
+        android:title="Data"
+        android:icon="@drawable/baseline_auto_graph_24"
         android:iconTint="@color/lavender"
         />
 

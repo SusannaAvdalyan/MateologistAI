@@ -28,6 +28,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 public class ChatListActivity extends AppCompatActivity {
 
@@ -38,6 +39,15 @@ public class ChatListActivity extends AppCompatActivity {
     private SearchView searchView;
     private String currentUserID;
     private FirebaseAuth mAuth;
+
+    private int[] imageResIds = {
+            R.drawable.whitechar,
+            R.drawable.colorfulchar,
+            R.drawable.yellowchar,
+            R.drawable.appchar,
+    };
+    int randomIndex = new Random().nextInt(imageResIds.length);
+    int randomImageResId = imageResIds[randomIndex];
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,12 +66,15 @@ public class ChatListActivity extends AppCompatActivity {
         currentUserID = currentUser.getUid();
         retrieveChatsFromFirebase(currentUserID);
 
+
+
         chatListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 ChatClass chat = adapter.getItem(position);
                 String chatName = chat.getChatName();
-                openChat(chatName);
+                int imageResId = chat.getImageResId();
+                openChat(chatName, imageResId);
             }
         });
 
@@ -71,12 +84,12 @@ public class ChatListActivity extends AppCompatActivity {
             int itemId = item.getItemId();
             if (itemId == R.id.home) {
                 return true;
-            } else if (itemId == R.id.chat) {
-                startActivity(new Intent(getApplicationContext(), AdvicesActivity.class));
-                finish();
-                return true;
             } else if (itemId == R.id.home) {
                 startActivity(new Intent(getApplicationContext(), ChatListActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.chat) {
+                startActivity(new Intent(getApplicationContext(), AdvicesActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.settings) {
@@ -88,8 +101,11 @@ public class ChatListActivity extends AppCompatActivity {
                 finish();
                 return true;
             }
+
             return false;
         });
+
+
 
 
     }
@@ -115,10 +131,10 @@ public class ChatListActivity extends AppCompatActivity {
         searchView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                searchView.setIconified(false); // Expand the search view
-                searchView.requestFocus(); // Request focus on the search view
+                searchView.setIconified(false);
+                searchView.requestFocus();
                 InputMethodManager imm = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-                imm.showSoftInput(searchView, InputMethodManager.SHOW_IMPLICIT); // Show the keyboard
+                imm.showSoftInput(searchView, InputMethodManager.SHOW_IMPLICIT);
             }
         });
 
@@ -145,6 +161,7 @@ public class ChatListActivity extends AppCompatActivity {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     ChatClass chat = snapshot.getValue(ChatClass.class);
                     if (chat != null) {
+
                         chatList.add(chat);
                     }
                 }
@@ -159,11 +176,18 @@ public class ChatListActivity extends AppCompatActivity {
     }
 
 
-    public void openChat(String chatName) {
-        Intent intent = new Intent(ChatListActivity.this, MainActivity.class);
-        intent.putExtra("chatName", chatName); // Pass the chat name to MainActivity
-        startActivity(intent);
+
+    public void openChat(String chatName, int imageResId) {
+        if (chatName != null && !chatName.isEmpty()) {
+            Intent intent = new Intent(ChatListActivity.this, MainActivity.class);
+            intent.putExtra("chatName", chatName);
+            intent.putExtra("imageResId", imageResId);
+            startActivity(intent);
+        } else {
+
+        }
     }
+
 
     public void onAddChatButtonClick(View view) {
         openDialog(new DialogCallback() {
@@ -181,18 +205,20 @@ public class ChatListActivity extends AppCompatActivity {
     }
 
     private void createNewChat(String date, String chatName) {
-        ChatClass newChat = new ChatClass(date, chatName);
+        int randomIndex = new Random().nextInt(imageResIds.length);
+        int selectedImageResId = imageResIds[randomIndex];
+
+        ChatClass newChat = new ChatClass(date, chatName, selectedImageResId);
 
         chatsRef.child(currentUserID).child(chatName).setValue(newChat)
                 .addOnSuccessListener(aVoid -> {
-                    // Chat successfully created in Firebase
                     Toast.makeText(ChatListActivity.this, "New chat created", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    // Failed to create chat in Firebase
                     Toast.makeText(ChatListActivity.this, "Failed to create new chat", Toast.LENGTH_SHORT).show();
                 });
     }
+
 
     private interface DialogCallback {
         void onDialogSubmit(String userInput);
@@ -212,7 +238,7 @@ public class ChatListActivity extends AppCompatActivity {
                 String userInput = editText.getText().toString();
                 Toast.makeText(ChatListActivity.this, "Submitted: " + userInput, Toast.LENGTH_SHORT).show();
                 dialog.dismiss();
-                callback.onDialogSubmit(userInput); // Callback with user input
+                callback.onDialogSubmit(userInput);
             }
         });
 

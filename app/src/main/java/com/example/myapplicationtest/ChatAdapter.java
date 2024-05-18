@@ -6,7 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupWindow;
 import android.widget.TextView;
@@ -21,6 +20,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.util.List;
+import java.util.Random;
 
 public class ChatAdapter extends ArrayAdapter<ChatClass> {
 
@@ -29,8 +29,15 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
     private String currentUserID;
     private FirebaseAuth mAuth;
 
-    public ChatAdapter(Context context, List<ChatClass> chatList) {
+    // Add an array of image resource IDs
+    private int[] imageResIds = {
+            R.drawable.whitechar,
+            R.drawable.colorfulchar,
+            R.drawable.yellowchar,
+            R.drawable.appchar,
+    };
 
+    public ChatAdapter(Context context, List<ChatClass> chatList) {
         super(context, 0, chatList);
         mContext = context;
         mChatList = chatList;
@@ -51,6 +58,16 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
         // Set the chat name
         TextView chatNameTextView = listItem.findViewById(R.id.listName);
         chatNameTextView.setText(currentChat.getChatName());
+
+        // Set a random image for the chat
+        ImageView listImage = listItem.findViewById(R.id.listImage);
+        if (currentChat.getImageResId() == 0) {
+            // Generate a random index to select an image if not already set
+            int randomIndex = new Random().nextInt(imageResIds.length);
+            int selectedImageResId = imageResIds[randomIndex];
+            currentChat.setImageResId(selectedImageResId);
+        }
+        listImage.setImageResource(currentChat.getImageResId());
 
         ImageView btnMoreOptions = listItem.findViewById(R.id.moreBtn);
         btnMoreOptions.setOnClickListener(v -> {
@@ -76,7 +93,6 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
 
     // Method to delete chat
     private void deleteChat(ChatClass chat) {
-        MessageClass message = new MessageClass();
         mChatList.remove(chat);
         notifyDataSetChanged();
         mAuth = FirebaseAuth.getInstance();
@@ -97,6 +113,5 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
                 .child(currentUserID)
                 .child(chat.getChatName());
         messagesRef.removeValue();
-
     }
 }

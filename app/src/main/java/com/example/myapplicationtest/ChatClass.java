@@ -3,23 +3,32 @@ package com.example.myapplicationtest;
 public class ChatClass {
     private String date;
     private String chatName;
+    private int imageResId;
 
-    // Default constructor (required for Firebase)
+    // No-argument constructor
     public ChatClass() {
+        // Default constructor required for calls to DataSnapshot.getValue(ChatClass.class)
     }
 
-    // Constructor
+    // Constructor with all fields
+    public ChatClass(String date, String chatName, int imageResId) {
+        this.date = date;
+        this.chatName = chatName;
+        this.imageResId = imageResId;
+    }
+
+    // Constructor without imageResId
     public ChatClass(String date, String chatName) {
         this.date = date;
         this.chatName = chatName;
     }
 
     // Getters and setters
-    public String getChatId() {
+    public String getDate() {
         return date;
     }
 
-    public void setChatId(String chatId) {
+    public void setDate(String date) {
         this.date = date;
     }
 
@@ -31,5 +40,11 @@ public class ChatClass {
         this.chatName = chatName;
     }
 
-}
+    public int getImageResId() {
+        return imageResId;
+    }
 
+    public void setImageResId(int imageResId) {
+        this.imageResId = imageResId;
+    }
+}

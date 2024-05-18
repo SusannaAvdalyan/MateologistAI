@@ -15,6 +15,9 @@
         android:iconifiedByDefault="false"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
+        android:background="@drawable/round_corner"
+        android:elevation="20dp"
+        android:layout_margin="15dp"
         android:textColor="@android:color/black"
         android:textColorHint="#A9A9A9"/>
 

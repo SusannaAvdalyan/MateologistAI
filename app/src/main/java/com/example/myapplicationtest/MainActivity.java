@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -99,6 +100,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        int imageResId = getIntent().getIntExtra("imageResId", R.drawable.appchar);
+        ImageView imageView = findViewById(R.id.imageView);
+        imageView.setImageResource(imageResId);
 
         sendQueryButton.setOnClickListener(v -> {
             String query = queryEditText.getText().toString() + "You are an AI friend named Mateo, designed to provide emotional support and helpful advice. Please respond with empathy and understanding and SHORT ANSWERS, focusing on providing practical solutions and engaging in friendly conversation. Avoid discussing sensitive topics and giving lengthy responses.";
@@ -106,10 +110,10 @@ public class MainActivity extends AppCompatActivity {
             addToChat(query, MessageClass.SENT_BY_ME);
             queryEditText.setText("");
 
-            // Sending user query to the database
+
             sendMessageToDatabase(chatName, showQuery, MessageClass.SENT_BY_ME);
 
-            progressBar.setVisibility(View.VISIBLE); // Show progress bar while waiting for AI response
+            progressBar.setVisibility(View.VISIBLE);
 
             GeminiPro.getResponse(chatModel, query, new ResponseCallback() {
                 @Override
@@ -220,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    // Handle error
+
                 }
             });
         }

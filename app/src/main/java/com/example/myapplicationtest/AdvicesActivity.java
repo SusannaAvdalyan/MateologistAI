@@ -108,13 +108,13 @@ public class AdvicesActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 ArrayList<BarEntry> entries = new ArrayList<>();
                 ArrayList<String> dates = new ArrayList<>();
-                HashSet<String> uniqueDates = new HashSet<>(); // HashSet to store unique dates
+                HashSet<String> uniqueDates = new HashSet<>();
 
                 for (DataSnapshot dateSnapshot : dataSnapshot.getChildren()) {
                     String date = dateSnapshot.getKey();
 
-                    if (!uniqueDates.contains(date)) { // Check if the date is already added
-                        uniqueDates.add(date); // Add date to HashSet
+                    if (!uniqueDates.contains(date)) {
+                        uniqueDates.add(date);
                         int totalMoodLevel = 0;
                         int moodCount = 0;
                         for (DataSnapshot moodSnapshot : dateSnapshot.getChildren()) {
