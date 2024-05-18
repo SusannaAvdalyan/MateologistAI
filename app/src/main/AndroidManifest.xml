@@ -21,6 +21,9 @@
             android:name=".AdvicesActivity"
             android:exported="false" />
         <activity
+            android:name=".DataActivity"
+            android:exported="false" />
+        <activity
             android:name=".SettingsActivity"
             android:exported="false" />
         <activity

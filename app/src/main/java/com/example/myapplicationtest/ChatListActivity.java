@@ -89,7 +89,7 @@ public class ChatListActivity extends AppCompatActivity {
                 finish();
                 return true;
             } else if (itemId == R.id.chat) {
-                startActivity(new Intent(getApplicationContext(), AdvicesActivity.class));
+                startActivity(new Intent(getApplicationContext(), DataActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.settings) {

@@ -2,11 +2,9 @@ package com.example.myapplicationtest;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SeekBar;
@@ -22,8 +20,11 @@ import com.google.ai.client.generativeai.java.GenerativeModelFutures;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,10 +36,10 @@ public class MoodActivity extends AppCompatActivity {
     private TextView textView;
     private SeekBar seekBar;
     private Button submitButton;
-    private EditText moodText;
-    private ProgressBar progressBar;
     private String currentUserID;
     private FirebaseAuth mAuth;
+    private EditText moodText;
+    private ProgressBar progressBar;
     private DatabaseReference moodRef;
     private BarChart barChart;
     private ChatFutures chatModel;
@@ -46,32 +47,20 @@ public class MoodActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_mood); // Ensure this layout file contains all the necessary views
+        setContentView(R.layout.activity_mood);
 
         moodText = findViewById(R.id.moodTextInput);
+        imageView = findViewById(R.id.imageView);
         textView = findViewById(R.id.textViewFeeling);
         seekBar = findViewById(R.id.seekBar);
         submitButton = findViewById(R.id.submitButton);
-        progressBar = findViewById(R.id.sendPromptProgressBar);
-
-
-
-        // Initialize Firebase Auth and get current user ID
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-            currentUserID = currentUser.getUid();
-        } else {
-            // Handle the case where the user is not logged in
-            Toast.makeText(this, "User not logged in", Toast.LENGTH_SHORT).show();
-            finish();
-            return;
-        }
-
-        moodRef = FirebaseDatabase.getInstance().getReference().child("moods").child(currentUserID);
         chatModel = getChatModel();
+        currentUserID = currentUser.getUid();
+        moodRef = FirebaseDatabase.getInstance().getReference().child("moods").child(currentUserID);
+        progressBar = findViewById(R.id.sendPromptProgressBar);
 
-        // Set up SeekBar listener
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -84,40 +73,41 @@ public class MoodActivity extends AppCompatActivity {
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {}
         });
+        submitButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int progress = seekBar.getProgress();
+                String query = "Hey, Could you please provide suggestions based on the mood I'm expressing in my texts? Just send your suggestions and nothing more, too long, write just a few essential points. Thanks!" + moodText.getText().toString();
+                String mood = textView.getText().toString();
+                progressBar.setVisibility(View.VISIBLE);
+                GeminiPro.getResponse(chatModel, query, new ResponseCallback() {
+                    @Override
+                    public void onResponse(String response) {
+                        sendMoodToDatabase(progress, moodText.getText().toString(), response);
+                        Intent intent = new Intent(MoodActivity.this, AdvicesActivity.class);
+                        intent.putExtra("advice", response);
+                        startActivity(intent);
+                        progressBar.setVisibility(View.GONE);
+                    }
 
-        // Set up Submit Button listener
-        submitButton.setOnClickListener(v -> {
-            int progress = seekBar.getProgress();
-            String query = "Hey, you're my best friend and I really, value your input. Could you please provide suggestions based on the mood I'm expressing in my texts? Just send your suggestions and nothing more, don't make them too short or too long. Thanks!" + moodText.getText().toString();
-            String mood = textView.getText().toString();
-            sendMoodToDatabase(progress, moodText.getText().toString());
-            progressBar.setVisibility(View.VISIBLE);
-            GeminiPro.getResponse(chatModel, query, new ResponseCallback() {
-                @Override
-                public void onResponse(String response) {
-                    Intent intent = new Intent(MoodActivity.this, AdvicesActivity.class);
-                    intent.putExtra("advice", response);
-                    startActivity(intent);
-                    progressBar.setVisibility(View.GONE);
-                }
-
-                @Override
-                public void onError(Throwable throwable) {
-                    progressBar.setVisibility(View.GONE);
-                    Toast.makeText(MoodActivity.this, "Error getting response from AI", Toast.LENGTH_SHORT).show();
-                }
-            });
+                    @Override
+                    public void onError(Throwable throwable) {
+                        progressBar.setVisibility(View.GONE);
+                        Toast.makeText(MoodActivity.this, "Error getting response from AI", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
         });
 
-        // Set up Bottom Navigation
+
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.mood);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
-            if (itemId == R.id.chat) {
+            if (itemId == R.id.mood) {
                 return true;
             } else if (itemId == R.id.chat) {
-                startActivity(new Intent(getApplicationContext(), AdvicesActivity.class));
+                startActivity(new Intent(getApplicationContext(), DataActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.home) {
@@ -144,7 +134,6 @@ public class MoodActivity extends AppCompatActivity {
     }
 
     private void updateImageAndText(int progress) {
-        // Update image and text based on progress
         switch (progress) {
             case 0:
                 imageView.setImageResource(R.drawable.sad);
@@ -169,12 +158,14 @@ public class MoodActivity extends AppCompatActivity {
         }
     }
 
-    private void sendMoodToDatabase(int moodLevel, String moodText) {
-        String dateTime = getCurrentDateTime();
-        DatabaseReference moodEntryRef = moodRef.child(dateTime).push();
+    private void sendMoodToDatabase(int moodLevel, String moodText, String advice) {
+        String dataTime = getCurrentDateTime();
+        DatabaseReference moodEntryRef = moodRef.child(dataTime).push();
         moodEntryRef.child("moodLevel").setValue(moodLevel);
         moodEntryRef.child("moodText").setValue(moodText);
+        moodEntryRef.child("moodAdvice").setValue(advice);
     }
+
 
     private String getCurrentDateTime() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd", Locale.getDefault());

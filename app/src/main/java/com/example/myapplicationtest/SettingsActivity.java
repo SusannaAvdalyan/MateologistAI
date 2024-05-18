@@ -30,7 +30,7 @@ public class SettingsActivity extends AppCompatActivity {
             if (itemId == R.id.settings) {
                 return true;
             } else if (itemId == R.id.chat) {
-                startActivity(new Intent(getApplicationContext(), AdvicesActivity.class));
+                startActivity(new Intent(getApplicationContext(), DataActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.home) {

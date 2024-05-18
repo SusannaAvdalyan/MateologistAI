@@ -1,65 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center_horizontal">
+    android:orientation="vertical"
+    tools:context=".AdvicesActivity">
 
     <ImageButton
         android:id="@+id/back"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/baseline_arrow_back_ios_new_24"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="20dp"
-        android:backgroundTint="@color/white"
+        android:layout_margin="30dp"
+        android:background="@color/white"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="advice"
+        android:id="@+id/adviceTextView"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
+        android:layout_marginStart="15dp"
+        android:layout_marginEnd="15dp"
+        android:textSize="20dp"
         />
 
-    <TextView
-        android:id="@+id/adviceTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Here are some advices"
-        android:textSize="24sp"
-        android:textColor="#655A7C"
-        android:textStyle="italic"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="30dp"
-        android:layout_below="@id/adviceTitle"
-        android:textAlignment="textStart"
-        tools:ignore="HardcodedText" />
-
-    <TextView
-        android:id="@+id/adviceTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textSize="20sp"
-        android:textColor="#655A7C"
-        android:textStyle="bold"
-        android:textAlignment="textStart"
-        android:layout_marginTop="60dp"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        tools:text="Here is some advice" />
-
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/barChart"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_below="@id/adviceTextView"
-        android:layout_marginTop="20dp" />
-
-
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottom_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:itemTextColor="#655A7C"
-        app:itemIconTint="#655A7C"
-        app:menu="@menu/bottom_menu" />
-
-</RelativeLayout>
+</LinearLayout>
