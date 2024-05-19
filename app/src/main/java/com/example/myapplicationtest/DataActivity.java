@@ -61,7 +61,7 @@ public class DataActivity extends AppCompatActivity {
         cardView = findViewById(R.id.card_view);
         ImageButton backBtn = findViewById(R.id.back);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-        bottomNavigationView.setSelectedItemId(R.id.mood);
+        bottomNavigationView.setSelectedItemId(R.id.chat);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
             if (itemId == R.id.chat) {
