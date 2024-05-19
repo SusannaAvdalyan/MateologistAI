@@ -169,7 +169,7 @@ public class DataActivity extends AppCompatActivity {
                 return getMoodName(value);
             }
         });
-        barData.setValueTextSize(12f);
+        barData.setValueTextSize(17f);
         barData.setValueTextColor(Color.WHITE);
         barChart.invalidate();
     }
@@ -178,15 +178,15 @@ public class DataActivity extends AppCompatActivity {
 
     private String getMoodName(float moodLevel) {
         if (moodLevel >= 4) {
-            return "Amazing 😊";
+            return "😊";
         } else if (moodLevel >= 3) {
-            return "Happy 😄";
+            return "😄";
         } else if (moodLevel >= 2) {
-            return "Nervous 😬";
+            return "😬";
         } else if (moodLevel >= 1) {
-            return "Upset 😔";
+            return "😔";
         } else {
-            return "Sad 😞";
+            return "😞";
         }
     }
 
