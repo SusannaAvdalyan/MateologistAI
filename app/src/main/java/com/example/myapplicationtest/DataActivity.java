@@ -1,6 +1,7 @@
 package com.example.myapplicationtest;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
@@ -11,6 +12,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -53,6 +55,9 @@ public class DataActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+        barChart = findViewById(R.id.barChart);
+        float radius = 80f;
+        barChart.setRenderer(new RoundedBarChartRenderer(barChart, radius));
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
         currentUserID = currentUser.getUid();
@@ -160,7 +165,6 @@ public class DataActivity extends AppCompatActivity {
         XAxis xAxis = barChart.getXAxis();
         xAxis.setValueFormatter(new IndexAxisValueFormatter(dates));
 
-
         barChart.setDrawValueAboveBar(false);
 
         barData.setValueFormatter(new ValueFormatter() {
@@ -169,10 +173,11 @@ public class DataActivity extends AppCompatActivity {
                 return getMoodName(value);
             }
         });
-        barData.setValueTextSize(17f);
+        barData.setValueTextSize(20f);
         barData.setValueTextColor(Color.WHITE);
         barChart.invalidate();
     }
+
 
 
 

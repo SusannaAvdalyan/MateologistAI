@@ -3,11 +3,13 @@ package com.example.myapplicationtest;
 import static com.example.myapplicationtest.R.id.bottom_navigation;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,19 +32,15 @@ public class SettingsActivity extends AppCompatActivity {
             if (itemId == R.id.settings) {
                 return true;
             } else if (itemId == R.id.chat) {
-                startActivity(new Intent(getApplicationContext(), DataActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.home) {
-                startActivity(new Intent(getApplicationContext(), ChatListActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.settings) {
-                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.mood) {
-                startActivity(new Intent(getApplicationContext(), MoodActivity.class));
                 finish();
                 return true;
             }

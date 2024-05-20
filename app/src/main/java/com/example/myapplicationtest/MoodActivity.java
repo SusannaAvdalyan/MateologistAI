@@ -1,6 +1,7 @@
 package com.example.myapplicationtest;
 
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
@@ -13,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 import com.google.ai.client.generativeai.java.ChatFutures;
 import com.google.ai.client.generativeai.java.GenerativeModelFutures;
@@ -83,19 +85,15 @@ public class MoodActivity extends AppCompatActivity {
             if (itemId == R.id.mood) {
                 return true;
             } else if (itemId == R.id.mood) {
-                startActivity(new Intent(getApplicationContext(), MoodActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.home) {
-                startActivity(new Intent(getApplicationContext(), ChatListActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.settings) {
-                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.chat) {
-                startActivity(new Intent(getApplicationContext(), DataActivity.class));
                 finish();
                 return true;
             }

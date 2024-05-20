@@ -2,6 +2,7 @@ package com.example.myapplicationtest;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.tts.TextToSpeech;
@@ -16,6 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -133,6 +135,36 @@ public class MainActivity extends AppCompatActivity {
         });
 
         retrieveMessagesFromFirebase(chatName);
+
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+        bottomNavigationView.setSelectedItemId(R.id.home);
+        bottomNavigationView.setOnItemSelectedListener(item -> {
+            int itemId = item.getItemId();
+            if (itemId == R.id.home) {
+                return true;
+            } else if (itemId == R.id.home) {
+                startActivity(new Intent(getApplicationContext(), ChatListActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.chat) {
+                startActivity(new Intent(getApplicationContext(), DataActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.settings) {
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
+                finish();
+                return true;
+            } else if (itemId == R.id.mood) {
+                startActivity(new Intent(getApplicationContext(), MoodActivity.class));
+                finish();
+                return true;
+            }
+
+            return false;
+        });
+
+
+
     }
 
     private ChatFutures getChatModel() {
