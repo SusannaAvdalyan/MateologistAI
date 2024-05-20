@@ -1,5 +1,6 @@
 package com.example.myapplicationtest;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
@@ -33,7 +34,7 @@ public class MoodActivity extends AppCompatActivity {
     private ImageView imageView;
     private TextView textViewFeeling;
     private SeekBar seekBar;
-    private Button submitButton;
+    private Button submitButton, okButton;
     private String currentUserID;
     private FirebaseAuth mAuth;
     private EditText moodTextInput;
@@ -57,6 +58,7 @@ public class MoodActivity extends AppCompatActivity {
         chatModel = getChatModel();
         currentUserID = currentUser != null ? currentUser.getUid() : null;
         moodRef = FirebaseDatabase.getInstance().getReference().child("moods").child(currentUserID);
+
 
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
@@ -136,6 +138,7 @@ public class MoodActivity extends AppCompatActivity {
         int progress = seekBar.getProgress();
         String moodText = moodTextInput.getText().toString().trim();
         String mood = textViewFeeling.getText().toString();
+        showFeedbackDialog();
 
         if (TextUtils.isEmpty(moodText)) {
             moodTextInput.setError("This field is required");
@@ -153,7 +156,6 @@ public class MoodActivity extends AppCompatActivity {
                 sendMoodToDatabase(progress, moodText, response);
                 Intent intent = new Intent(MoodActivity.this, AdvicesActivity.class);
                 intent.putExtra("advice", response);
-                startActivity(intent);
                 sendPromptProgressBar.setVisibility(View.GONE);
             }
 
@@ -161,6 +163,24 @@ public class MoodActivity extends AppCompatActivity {
             public void onError(Throwable throwable) {
                 sendPromptProgressBar.setVisibility(View.GONE);
                 Toast.makeText(MoodActivity.this, "Error getting response from AI", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+    private void showFeedbackDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_mood_submit, null);
+        builder.setView(dialogView);
+        okButton = dialogView.findViewById(R.id.buttonOK);
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+        okButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(MoodActivity.this, AdvicesActivity.class);
+                startActivity(intent);
+                dialog.dismiss();
             }
         });
     }

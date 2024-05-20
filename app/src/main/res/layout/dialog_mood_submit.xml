@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="200dp"
+    android:layout_height="250dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/round_corner"
+    android:elevation="80dp"
+    android:padding="16dp">
+
+    <ImageView
+        android:id="@+id/imageViewFeedback"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/colorfulchar"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/textViewFeedback"
+        android:layout_width="220dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageViewFeedback"
+        android:layout_centerHorizontal="true"
+        android:textAlignment="center"
+        android:text="Don't forget to add your mood regularly"
+        android:fontFamily="sans-serif-condensed-light"
+        android:textColor="#655A7C"
+        android:textSize="18sp"
+        android:layout_marginBottom="8dp"/>
+
+    <Button
+        android:id="@+id/buttonOK"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textViewFeedback"
+        android:layout_centerHorizontal="true"
+        android:text="Fine"
+        android:backgroundTint="@color/lavender"
+        android:textColor="@color/white"
+        app:cornerRadius="15dp"
+        />
+
+</RelativeLayout>
