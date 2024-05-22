@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
@@ -80,11 +81,10 @@ public class SignUpActivity extends AppCompatActivity {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    // Sign up success
+                                    String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
                                     sendEmailVerification();
                                     startActivity(new Intent(SignUpActivity.this, EmailVerify.class));
                                 } else {
-                                    // Sign up failed
                                     Toast.makeText(SignUpActivity.this, "Sign up failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
@@ -95,26 +95,21 @@ public class SignUpActivity extends AppCompatActivity {
         loginRedirectText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Redirect to login activity
                 startActivity(new Intent(SignUpActivity.this, LoginActivity.class));
             }
         });
     }
 
     private void sendEmailVerification() {
-        // Send email verification
         FirebaseUser user = auth.getCurrentUser();
         if (user != null) {
             user.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()) {
-                        // Email verification sent
                         Toast.makeText(SignUpActivity.this, "Verification email sent", Toast.LENGTH_SHORT).show();
-                        // Redirect to login activity
                         proceedToNextActivity();
                     } else {
-                        // Email verification failed
                         Toast.makeText(SignUpActivity.this, "Failed to send verification email: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }

@@ -14,12 +14,23 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +54,9 @@ public class SpotifyActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private SongAdapter songAdapter;
     private Button showSuggestionsButton, authenticateButton;
+    private String currentUserID;
+    private FirebaseAuth mAuth;
+    private DatabaseReference tokenRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,35 +76,47 @@ public class SpotifyActivity extends AppCompatActivity {
         showSuggestionsButton = findViewById(R.id.showSuggestionsButton);
         authenticateButton = findViewById(R.id.authenticateButton);
 
-        authenticateButton.setEnabled(true);
-        authenticateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                authenticateWithSpotify();
-            }
-        });
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        currentUserID = currentUser.getUid();
+        tokenRef = FirebaseDatabase.getInstance().getReference("userTokens").child(currentUser.getUid());
 
-        showSuggestionsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fetchMusicSuggestions();
-            }
-        });
+        authenticateButton.setEnabled(true);
+        authenticateButton.setOnClickListener(v -> authenticateWithSpotify());
+
+        showSuggestionsButton.setOnClickListener(v -> fetchMusicSuggestions());
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         handleSpotifyRedirect(getIntent());
-        SharedPreferences preferences = getSharedPreferences("com.example.myapplicationtest", Context.MODE_PRIVATE);
-        String accessToken = preferences.getString("spotify_access_token", null);
-        if (accessToken != null) {
-            showSuggestionsButton.setEnabled(true);
-            Toast.makeText(this, "Successfully authenticated with Spotify!", Toast.LENGTH_SHORT).show();
-        } else {
-            showSuggestionsButton.setEnabled(false);
-        }
+        // Check for the token in Firebase
+        tokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String accessToken = dataSnapshot.getValue(String.class);
+                if (accessToken != null) {
+                    // Token found, authenticate with Spotify
+                    showSuggestionsButton.setEnabled(true);
+                    Toast.makeText(SpotifyActivity.this, "Successfully authenticated with Spotify!", Toast.LENGTH_SHORT).show();
+                    getUserProfile(accessToken);
+                } else {
+                    // Token not found, user needs to authenticate with Spotify
+                    showSuggestionsButton.setEnabled(false);
+                    Log.e(TAG, "Access token not found in Firebase. Please authenticate with Spotify.");
+                    Toast.makeText(SpotifyActivity.this, "Access token not found. Please authenticate with Spotify.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle error
+                Log.e(TAG, "Failed to retrieve access token from Firebase: " + databaseError.getMessage());
+            }
+        });
     }
+
 
     @Override
     protected void onNewIntent(Intent intent) {
@@ -108,6 +134,7 @@ public class SpotifyActivity extends AppCompatActivity {
                     if (param.startsWith("access_token=")) {
                         String accessToken = param.split("=")[1];
                         handleSpotifyAuthenticationSuccess(accessToken);
+                        tokenRef.setValue(accessToken);
                         return;
                     }
                 }
@@ -146,6 +173,7 @@ public class SpotifyActivity extends AppCompatActivity {
             Toast.makeText(this, "Please authenticate with Spotify first.", Toast.LENGTH_SHORT).show();
         }
     }
+
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -206,6 +234,19 @@ public class SpotifyActivity extends AppCompatActivity {
         editor.apply();
         Log.d(TAG, "Spotify authentication successful. Access token saved.");
         showSuggestionsButton.setEnabled(true);
+        tokenRef.setValue(accessToken)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Access token sent to Firebase successfully.");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "Failed to send access token to Firebase: " + e.getMessage());
+                    }
+                });
     }
 
     private void handleSpotifyAuthenticationFailure() {
