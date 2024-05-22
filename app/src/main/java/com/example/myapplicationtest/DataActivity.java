@@ -42,7 +42,7 @@ public class DataActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference moodRef;
     private BarChart barChart;
-    private CardView cardView;
+    private CardView cardView, songView;
 
 
     @Override
@@ -64,6 +64,7 @@ public class DataActivity extends AppCompatActivity {
         moodRef = FirebaseDatabase.getInstance().getReference().child("moods").child(currentUserID);
         barChart = findViewById(R.id.barChart);
         cardView = findViewById(R.id.card_view);
+        songView = findViewById(R.id.song_view);
         ImageButton backBtn = findViewById(R.id.back);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.chat);
@@ -105,6 +106,13 @@ public class DataActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(DataActivity.this, AdvicesActivity.class);
+                startActivity(intent);
+            }
+        });
+        songView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(DataActivity.this, SpotifyActivity.class);
                 startActivity(intent);
             }
         });

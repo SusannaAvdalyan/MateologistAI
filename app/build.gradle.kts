@@ -84,4 +84,6 @@ dependencies {
     implementation("com.google.ai.client.generativeai:generativeai:0.1.2")
     implementation("com.google.guava:guava:31.0.1-android")
     implementation("org.reactivestreams:reactive-streams:1.0.4")
+    implementation("com.github.bumptech.glide:glide:4.12.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.12.0")
 }

@@ -14,33 +14,51 @@
         android:src="@drawable/baseline_arrow_back_ios_new_24"
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
-        android:backgroundTint="@color/white"
-        />
+        android:backgroundTint="@color/white" />
 
+    <!-- First card -->
     <include layout="@layout/card_item"
-        android:id="@+id/card_view"/>
+        android:id="@+id/card_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/back" />
+
+    <!-- Line separator -->
+    <View
+        android:id="@+id/line_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/card_view"
+        android:background="@android:color/darker_gray" />
+
+    <!-- Second card -->
+    <include layout="@layout/song_item"
+        android:id="@+id/song_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/line_separator"
+        android:layout_marginTop="8dp" />
 
     <TextView
+        android:id="@+id/moodText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/card_view"
-        android:layout_marginBottom="-70dp"
-        android:layout_marginStart="120dp"
-        android:fontFamily="sans-serif-condensed"
-        android:textColor="#655A7C"
-        android:textSize="25dp"
+        android:layout_below="@id/song_view"
+        android:layout_marginTop="15dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginStart="16dp"
         android:text="Your mood data"
-        />
+        android:textColor="#655A7C"
+        android:textSize="25sp" />
 
     <com.github.mikephil.charting.charts.BarChart
         android:id="@+id/barChart"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_below="@id/back"
-        android:elevation="80dp"
-        android:layout_marginTop="200dp"
+        android:layout_below="@id/moodText"
+        android:layout_marginTop="16dp"
         android:layout_marginStart="30dp"
-        android:layout_marginEnd="30dp"/>
+        android:layout_marginEnd="30dp" />
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
