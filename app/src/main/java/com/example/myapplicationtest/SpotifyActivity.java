@@ -38,6 +38,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import okhttp3.Call;
@@ -101,7 +102,7 @@ public class SpotifyActivity extends AppCompatActivity {
                     // Token found, authenticate with Spotify
                     showSuggestionsButton.setEnabled(true);
                     Toast.makeText(SpotifyActivity.this, "Successfully authenticated with Spotify!", Toast.LENGTH_SHORT).show();
-                    getUserProfile(accessToken);
+                    //getUserProfile(accessToken); // No need to fetch user profile here
                 } else {
                     // Token not found, user needs to authenticate with Spotify
                     showSuggestionsButton.setEnabled(false);
@@ -168,7 +169,7 @@ public class SpotifyActivity extends AppCompatActivity {
         String accessToken = preferences.getString("spotify_access_token", null);
         if (accessToken != null) {
             Log.d(TAG, "Fetching music suggestions with access token: " + accessToken);
-            getUserProfile(accessToken);
+            fetchRandomTracks(accessToken); // Fetch random tracks directly
         } else {
             Log.e(TAG, "Access token is null. Please authenticate first.");
             Toast.makeText(this, "Please authenticate with Spotify first.", Toast.LENGTH_SHORT).show();
@@ -181,15 +182,19 @@ public class SpotifyActivity extends AppCompatActivity {
         return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 
-    private void getUserProfile(String accessToken) {
+    private void fetchRandomTracks(String accessToken) {
         OkHttpClient client = new OkHttpClient();
-        int offset = new Random().nextInt(100);
+        // Use a default offset if the total track count cannot be retrieved
+        int defaultOffset = new Random().nextInt(100);
+        int limit = 5; // Number of tracks to fetch
+
+        // Fetch random tracks directly without considering total track count
+        int offset = new Random().nextInt(1000); // Assuming there are at least 1000 tracks in the user's library
+
         Request request = new Request.Builder()
-                .url("https://api.spotify.com/v1/me/player/recently-played?limit=5&offset=" + offset)
+                .url("https://api.spotify.com/v1/me/tracks?limit=" + limit + "&offset=" + offset)
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .build();
-
-        Log.d(TAG, "Making API request to fetch recently played tracks.");
         client.newCall(request).enqueue(new Callback() {
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "API request failed", e);
@@ -198,11 +203,10 @@ public class SpotifyActivity extends AppCompatActivity {
             public void onResponse(Call call, Response response) throws IOException {
                 if (response.isSuccessful()) {
                     String responseData = response.body().string();
-                    Log.d(TAG, "API response: " + responseData);
                     try {
                         JSONObject jsonResponse = new JSONObject(responseData);
                         JSONArray items = jsonResponse.getJSONArray("items");
-                        ArrayList<Song> songs = new ArrayList<>();
+                        List<Song> songs = new ArrayList<>();
                         for (int i = 0; i < items.length(); i++) {
                             JSONObject track = items.getJSONObject(i).getJSONObject("track");
                             String trackName = track.getString("name");
@@ -223,7 +227,7 @@ public class SpotifyActivity extends AppCompatActivity {
                         Log.e(TAG, "Failed to parse JSON response", e);
                     }
                 } else {
-                    Log.e(TAG, "Failed to get user's recently played tracks: " + response.code());
+                    Log.e(TAG, "Failed to get user's tracks: " + response.code());
                 }
             }
         });
