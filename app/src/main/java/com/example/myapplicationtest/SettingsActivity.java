@@ -31,19 +31,24 @@ public class SettingsActivity extends AppCompatActivity {
             int itemId = item.getItemId();
             if (itemId == R.id.settings) {
                 return true;
-            } else if (itemId == R.id.chat) {
+            } else if (itemId == R.id.home) {
+                startActivity(new Intent(getApplicationContext(), ChatListActivity.class));
                 finish();
                 return true;
-            } else if (itemId == R.id.home) {
+            } else if (itemId == R.id.chat) {
+                startActivity(new Intent(getApplicationContext(), DataActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.settings) {
+                startActivity(new Intent(getApplicationContext(), SettingsActivity.class));
                 finish();
                 return true;
             } else if (itemId == R.id.mood) {
+                startActivity(new Intent(getApplicationContext(), MoodActivity.class));
                 finish();
                 return true;
             }
+
             return false;
         });
 

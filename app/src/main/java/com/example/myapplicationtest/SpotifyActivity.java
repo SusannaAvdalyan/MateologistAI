@@ -38,6 +38,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Random;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -182,8 +183,9 @@ public class SpotifyActivity extends AppCompatActivity {
 
     private void getUserProfile(String accessToken) {
         OkHttpClient client = new OkHttpClient();
+        int offset = new Random().nextInt(100);
         Request request = new Request.Builder()
-                .url("https://api.spotify.com/v1/me/player/recently-played?limit=5")
+                .url("https://api.spotify.com/v1/me/player/recently-played?limit=5&offset=" + offset)
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .build();
 
