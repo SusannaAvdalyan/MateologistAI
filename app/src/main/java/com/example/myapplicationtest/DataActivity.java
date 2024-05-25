@@ -109,15 +109,6 @@ public class DataActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        songView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(DataActivity.this, SpotifyActivity.class);
-                startActivity(intent);
-            }
-        });
-
-
     }
     private void retrieveMoodsFromDatabase() {
         moodRef.limitToLast(5).addListenerForSingleValueEvent(new ValueEventListener() {

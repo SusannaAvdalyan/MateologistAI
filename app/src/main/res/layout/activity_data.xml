@@ -16,34 +16,18 @@
         android:layout_marginStart="20dp"
         android:backgroundTint="@color/white" />
 
-    <!-- First card -->
     <include layout="@layout/card_item"
         android:id="@+id/card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/back" />
 
-    <!-- Line separator -->
-    <View
-        android:id="@+id/line_separator"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_below="@id/card_view"
-        android:background="@android:color/darker_gray" />
-
-    <!-- Second card -->
-    <include layout="@layout/song_item"
-        android:id="@+id/song_view"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/line_separator"
-        android:layout_marginTop="8dp" />
 
     <TextView
         android:id="@+id/moodText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/song_view"
+        android:layout_below="@id/card_view"
         android:layout_marginTop="15dp"
         android:layout_centerHorizontal="true"
         android:layout_marginStart="16dp"

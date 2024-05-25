@@ -142,13 +142,13 @@ public class MoodActivity extends AppCompatActivity {
         int progress = seekBar.getProgress();
         String moodText = moodTextInput.getText().toString().trim();
         String mood = textViewFeeling.getText().toString();
-        showFeedbackDialog();
 
         if (TextUtils.isEmpty(moodText)) {
             moodTextInput.setError("This field is required");
             return;
         } else {
             moodTextInput.setError(null);
+            showFeedbackDialog();
         }
 
         String query = "Hey, Could you please provide suggestions based on the mood I'm expressing in my texts? Just send your suggestions and nothing more, too long, write just a few essential points. Thanks!" + moodText;
@@ -170,6 +170,7 @@ public class MoodActivity extends AppCompatActivity {
             }
         });
     }
+
     private void showFeedbackDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         View dialogView = getLayoutInflater().inflate(R.layout.dialog_mood_submit, null);
