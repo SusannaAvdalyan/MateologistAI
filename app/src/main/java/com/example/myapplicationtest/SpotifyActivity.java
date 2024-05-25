@@ -11,6 +11,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
@@ -43,15 +44,19 @@ import java.util.Random;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 
 public class SpotifyActivity extends AppCompatActivity {
 
     private static final String CLIENT_ID = "19dae812f0044c0bac89a49e2b84f8a9";
+    private static final String CLIENT_SECRET = "572432672c694610b26e1e023cc39884";
     private static final String REDIRECT_URI = "mateologist://spotify-auth-callback";
-    private static final String[] SCOPES = {"user-read-email", "user-read-recently-played"};
+    private static final String[] SCOPES = {"user-read-email", "user-library-read", "user-library-modify"};
+    private static final String KEY_SONG_LIST = "song_list";
     private static final String TAG = "SpotifyActivity";
     private RecyclerView recyclerView;
     private SongAdapter songAdapter;
@@ -59,6 +64,8 @@ public class SpotifyActivity extends AppCompatActivity {
     private String currentUserID;
     private FirebaseAuth mAuth;
     private DatabaseReference tokenRef;
+    private ProgressBar progressBar;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,6 +84,7 @@ public class SpotifyActivity extends AppCompatActivity {
         recyclerView.setAdapter(songAdapter);
         showSuggestionsButton = findViewById(R.id.showSuggestionsButton);
         authenticateButton = findViewById(R.id.authenticateButton);
+        progressBar = findViewById(R.id.progressBar);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -87,7 +95,10 @@ public class SpotifyActivity extends AppCompatActivity {
         authenticateButton.setOnClickListener(v -> authenticateWithSpotify());
 
         showSuggestionsButton.setOnClickListener(v -> fetchMusicSuggestions());
+
+
     }
+
 
     @Override
     protected void onResume() {
@@ -117,6 +128,14 @@ public class SpotifyActivity extends AppCompatActivity {
                 Log.e(TAG, "Failed to retrieve access token from Firebase: " + databaseError.getMessage());
             }
         });
+    }
+
+    private void showProgressBar() {
+        progressBar.setVisibility(View.VISIBLE);
+    }
+
+    private void hideProgressBar() {
+        progressBar.setVisibility(View.GONE);
     }
 
 
@@ -164,17 +183,23 @@ public class SpotifyActivity extends AppCompatActivity {
             Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
             return;
         }
+        ensureAccessTokenValid();
+        showProgressBar();
+        songAdapter.clearSongs();
 
         SharedPreferences preferences = getSharedPreferences("com.example.myapplicationtest", Context.MODE_PRIVATE);
         String accessToken = preferences.getString("spotify_access_token", null);
         if (accessToken != null) {
-            Log.d(TAG, "Fetching music suggestions with access token: " + accessToken);
+            Log.d(TAG, "Access token retrieved: " + accessToken);
             fetchRandomTracks(accessToken); // Fetch random tracks directly
         } else {
-            Log.e(TAG, "Access token is null. Please authenticate first.");
-            Toast.makeText(this, "Please authenticate with Spotify first.", Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Access token is null. Authenticating with Spotify...");
+            authenticateWithSpotify();
         }
     }
+
+
+
 
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -184,12 +209,9 @@ public class SpotifyActivity extends AppCompatActivity {
 
     private void fetchRandomTracks(String accessToken) {
         OkHttpClient client = new OkHttpClient();
-        // Use a default offset if the total track count cannot be retrieved
         int defaultOffset = new Random().nextInt(100);
-        int limit = 5; // Number of tracks to fetch
-
-        // Fetch random tracks directly without considering total track count
-        int offset = new Random().nextInt(1000); // Assuming there are at least 1000 tracks in the user's library
+        int limit = 5;
+        int offset = new Random().nextInt(1000);
 
         Request request = new Request.Builder()
                 .url("https://api.spotify.com/v1/me/tracks?limit=" + limit + "&offset=" + offset)
@@ -198,11 +220,15 @@ public class SpotifyActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "API request failed", e);
+                runOnUiThread(() -> hideProgressBar()); // Hide progress bar on failure
             }
 
             public void onResponse(Call call, Response response) throws IOException {
+                runOnUiThread(() -> hideProgressBar()); // Hide progress bar regardless of response
+
                 if (response.isSuccessful()) {
                     String responseData = response.body().string();
+                    Log.d(TAG, "Response data: " + responseData); // Log response data
                     try {
                         JSONObject jsonResponse = new JSONObject(responseData);
                         JSONArray items = jsonResponse.getJSONArray("items");
@@ -233,6 +259,7 @@ public class SpotifyActivity extends AppCompatActivity {
         });
     }
 
+
     private void handleSpotifyAuthenticationSuccess(String accessToken) {
         SharedPreferences preferences = getSharedPreferences("com.example.myapplicationtest", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -259,4 +286,118 @@ public class SpotifyActivity extends AppCompatActivity {
         Log.e(TAG, "Spotify authentication failed");
         Toast.makeText(this, "Spotify authentication failed. Please try again.", Toast.LENGTH_SHORT).show();
     }
+
+    // Check if access token is expired
+    private boolean isAccessTokenExpired() {
+        SharedPreferences preferences = getSharedPreferences("com.example.myapplicationtest", Context.MODE_PRIVATE);
+        long expirationTime = preferences.getLong("spotify_access_token_expires_at", 0);
+        return expirationTime < System.currentTimeMillis();
+    }
+
+    // Refresh access token
+    private void refreshAccessToken(String refreshToken) {
+        // Construct the request body
+        FormBody.Builder formBodyBuilder = new FormBody.Builder()
+                .add("grant_type", "refresh_token")
+                .add("refresh_token", refreshToken)
+                .add("client_id", CLIENT_ID)
+                .add("client_secret", CLIENT_SECRET);
+
+        RequestBody formBody = formBodyBuilder.build();
+
+        // Create the request
+        Request request = new Request.Builder()
+                .url("https://accounts.spotify.com/api/token")
+                .post(formBody)
+                .build();
+
+        // Send the request
+        OkHttpClient client = new OkHttpClient();
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                Log.e(TAG, "Failed to refresh access token", e);
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                if (response.isSuccessful()) {
+                    String responseData = response.body().string();
+                    try {
+                        JSONObject jsonResponse = new JSONObject(responseData);
+                        String newAccessToken = jsonResponse.getString("access_token");
+                        long expiresIn = jsonResponse.getLong("expires_in"); // in seconds
+                        long expirationTime = System.currentTimeMillis() + expiresIn * 1000; // convert to milliseconds
+                        updateAccessTokenInStorage(newAccessToken, expirationTime);
+                    } catch (JSONException e) {
+                        Log.e(TAG, "Failed to parse JSON response", e);
+                    }
+                } else {
+                    Log.e(TAG, "Failed to refresh access token: " + response.code());
+                }
+            }
+        });
+    }
+
+    // Update access token in SharedPreferences and Firebase
+    private void updateAccessTokenInStorage(String newAccessToken, long expirationTime) {
+        SharedPreferences preferences = getSharedPreferences("com.example.myapplicationtest", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("spotify_access_token", newAccessToken);
+        editor.putLong("spotify_access_token_expires_at", expirationTime);
+        editor.apply();
+
+        // Also update the token in Firebase
+        tokenRef.setValue(newAccessToken)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Access token updated in Firebase successfully.");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.e(TAG, "Failed to update access token in Firebase: " + e.getMessage());
+                    }
+                });
+    }
+
+    // Before making API calls, check if access token needs to be refreshed
+    private void checkAndRefreshAccessTokenIfNeeded() {
+        if (isAccessTokenExpired()) {
+            SharedPreferences preferences = getSharedPreferences("com.example.myapplicationtest", Context.MODE_PRIVATE);
+            String refreshToken = preferences.getString("spotify_refresh_token", null);
+            if (refreshToken != null) {
+                refreshAccessToken(refreshToken);
+            } else {
+                Log.e(TAG, "Refresh token not found. User needs to re-authenticate.");
+                // Handle scenario where refresh token is not available (user needs to re-authenticate)
+            }
+        }
+    }
+
+    // Call this method before making any API calls to Spotify
+    private void ensureAccessTokenValid() {
+        if (!isNetworkAvailable()) {
+            Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (isAccessTokenExpired()) {
+            checkAndRefreshAccessTokenIfNeeded();
+        }
+
+        // Proceed with the API call using the refreshed access token
+        String accessToken = getSharedPreferences("com.example.myapplicationtest", Context.MODE_PRIVATE)
+                .getString("spotify_access_token", null);
+        if (accessToken != null) {
+            fetchRandomTracks(accessToken); // Fetch random tracks directly
+        } else {
+            Log.e(TAG, "Access token is null. Please authenticate first.");
+            Toast.makeText(this, "Please authenticate with Spotify first.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
 }

@@ -27,6 +27,10 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
         this.songList = songs;
         notifyDataSetChanged();
     }
+    public void clearSongs() {
+        songList.clear();
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @Override
