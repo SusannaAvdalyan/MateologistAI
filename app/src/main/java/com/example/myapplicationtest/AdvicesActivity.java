@@ -139,11 +139,7 @@ public class AdvicesActivity extends AppCompatActivity {
         String advice = getIntent().getStringExtra("advice");
         if (advice != null) {
             saveAdvice(advice);
-        }
-
-        String savedAdvice = getSavedAdvice();
-        if (savedAdvice != null) {
-            adviceTextView.setText(savedAdvice);
+            adviceTextView.setText(advice);
         } else {
             adviceTextView.setText("Submit your mood to get advice");
         }
@@ -167,7 +163,7 @@ public class AdvicesActivity extends AppCompatActivity {
         volumeIcon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                tts.speak(savedAdvice, TextToSpeech.QUEUE_FLUSH, null, null);
+                tts.speak(getSavedAdvice(), TextToSpeech.QUEUE_FLUSH, null, null);
             }
         });
     }
@@ -192,10 +188,21 @@ public class AdvicesActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Handle error
                 Log.e(TAG, "Failed to retrieve access token from Firebase: " + databaseError.getMessage());
             }
         });
+        String savedAdvice = getSavedAdvice();
+        if (savedAdvice != null) {
+            adviceTextView.setText(savedAdvice);
+        } else {
+            adviceTextView.setText("Submit your mood to get advice");
+        }
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        String currentAdvice = adviceTextView.getText().toString();
+        saveAdvice(currentAdvice);
     }
 
     private void saveAdvice(String advice) {
@@ -365,7 +372,6 @@ public class AdvicesActivity extends AppCompatActivity {
         Toast.makeText(this, "Spotify authentication failed. Please try again.", Toast.LENGTH_SHORT).show();
     }
 
-    // Check if access token is expired
     private boolean isAccessTokenExpired() {
         SharedPreferences preferences = getSharedPreferences("com.example.myapplicationtest", Context.MODE_PRIVATE);
         long expirationTime = preferences.getLong("spotify_access_token_expires_at", 0);

@@ -64,7 +64,6 @@ public class DataActivity extends AppCompatActivity {
         moodRef = FirebaseDatabase.getInstance().getReference().child("moods").child(currentUserID);
         barChart = findViewById(R.id.barChart);
         cardView = findViewById(R.id.card_view);
-        songView = findViewById(R.id.song_view);
         ImageButton backBtn = findViewById(R.id.back);
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.chat);

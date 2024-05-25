@@ -148,7 +148,6 @@ public class MoodActivity extends AppCompatActivity {
             return;
         } else {
             moodTextInput.setError(null);
-            showFeedbackDialog();
         }
 
         String query = "Hey, Could you please provide suggestions based on the mood I'm expressing in my texts? Just send your suggestions and nothing more, too long, write just a few essential points. Thanks!" + moodText;
@@ -159,7 +158,8 @@ public class MoodActivity extends AppCompatActivity {
             public void onResponse(String response) {
                 sendMoodToDatabase(progress, moodText, response);
                 Intent intent = new Intent(MoodActivity.this, AdvicesActivity.class);
-                intent.putExtra("advice", response);
+                intent.putExtra("advice", response); // Pass the AI response to AdvicesActivity
+                startActivity(intent); // Start AdvicesActivity
                 sendPromptProgressBar.setVisibility(View.GONE);
             }
 
@@ -170,6 +170,7 @@ public class MoodActivity extends AppCompatActivity {
             }
         });
     }
+
 
     private void showFeedbackDialog() {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
