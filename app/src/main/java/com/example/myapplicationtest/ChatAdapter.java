@@ -29,7 +29,6 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
     private String currentUserID;
     private FirebaseAuth mAuth;
 
-    // Add an array of image resource IDs
     private int[] imageResIds = {
             R.drawable.whitechar,
             R.drawable.colorfulchar,
@@ -52,17 +51,13 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
             listItem = LayoutInflater.from(mContext).inflate(R.layout.list_item, parent, false);
         }
 
-        // Get the current chat object
         ChatClass currentChat = mChatList.get(position);
 
-        // Set the chat name
         TextView chatNameTextView = listItem.findViewById(R.id.listName);
         chatNameTextView.setText(currentChat.getChatName());
 
-        // Set a random image for the chat
         ImageView listImage = listItem.findViewById(R.id.listImage);
         if (currentChat.getImageResId() == 0) {
-            // Generate a random index to select an image if not already set
             int randomIndex = new Random().nextInt(imageResIds.length);
             int selectedImageResId = imageResIds[randomIndex];
             currentChat.setImageResId(selectedImageResId);
@@ -71,7 +66,6 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
 
         ImageView btnMoreOptions = listItem.findViewById(R.id.moreBtn);
         btnMoreOptions.setOnClickListener(v -> {
-            // Show options popup window when more options button is clicked
             showOptionsPopup(v, currentChat);
         });
 
@@ -86,12 +80,8 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
             deleteChat(chat);
             popupWindow.dismiss();
         });
-
-        // Show the popup window next to the anchor view
         popupWindow.showAsDropDown(anchorView);
     }
-
-    // Method to delete chat
     private void deleteChat(ChatClass chat) {
         mChatList.remove(chat);
         notifyDataSetChanged();

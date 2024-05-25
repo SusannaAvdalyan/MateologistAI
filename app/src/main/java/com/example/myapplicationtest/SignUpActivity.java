@@ -38,10 +38,8 @@ public class SignUpActivity extends AppCompatActivity {
         loginRedirectText = findViewById(R.id.loginRedirect);
         confirmPassword = findViewById(R.id.signup_confirmpassword);
 
-        // Check if the user is already signed in
         FirebaseUser currentUser = auth.getCurrentUser();
         if (currentUser != null && currentUser.isEmailVerified()) {
-            // User is already signed in and email is verified
             proceedToNextActivity();
         }
 
@@ -54,7 +52,6 @@ public class SignUpActivity extends AppCompatActivity {
                 String password = signupPassword.getText().toString().trim();
                 String confirmPasswordStr = confirmPassword.getText().toString().trim();
 
-                // Validate user input
                 if (TextUtils.isEmpty(email)) {
                     signupEmail.setError("Email cannot be empty");
                     return;
@@ -75,7 +72,6 @@ public class SignUpActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Create user with Firebase Authentication
                 auth.createUserWithEmailAndPassword(email, password)
                         .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                             @Override

@@ -305,15 +305,15 @@ public class AdvicesActivity extends AppCompatActivity {
         client.newCall(request).enqueue(new Callback() {
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "API request failed", e);
-                runOnUiThread(() -> hideProgressBar()); // Hide progress bar on failure
+                runOnUiThread(() -> hideProgressBar());
             }
 
             public void onResponse(Call call, Response response) throws IOException {
-                runOnUiThread(() -> hideProgressBar()); // Hide progress bar regardless of response
+                runOnUiThread(() -> hideProgressBar());
 
                 if (response.isSuccessful()) {
                     String responseData = response.body().string();
-                    Log.d(TAG, "Response data: " + responseData); // Log response data
+                    Log.d(TAG, "Response data: " + responseData);
                     try {
                         JSONObject jsonResponse = new JSONObject(responseData);
                         JSONArray items = jsonResponse.getJSONArray("items");

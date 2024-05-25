@@ -152,14 +152,15 @@ public class MoodActivity extends AppCompatActivity {
 
         String query = "Hey, Could you please provide suggestions based on the mood I'm expressing in my texts? Just send your suggestions and nothing more, too long, write just a few essential points. Thanks!" + moodText;
         sendPromptProgressBar.setVisibility(View.VISIBLE);
+        showFeedbackDialog();
 
         GeminiPro.getResponse(chatModel, query, new ResponseCallback() {
             @Override
             public void onResponse(String response) {
                 sendMoodToDatabase(progress, moodText, response);
                 Intent intent = new Intent(MoodActivity.this, AdvicesActivity.class);
-                intent.putExtra("advice", response); // Pass the AI response to AdvicesActivity
-                startActivity(intent); // Start AdvicesActivity
+                intent.putExtra("advice", response);
+                startActivity(intent);
                 sendPromptProgressBar.setVisibility(View.GONE);
             }
 

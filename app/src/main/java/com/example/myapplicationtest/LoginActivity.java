@@ -63,7 +63,6 @@ public class LoginActivity extends AppCompatActivity {
                     return;
                 }
 
-                // Attempt login
                 auth.signInWithEmailAndPassword(email, password)
                         .addOnSuccessListener(new OnSuccessListener<AuthResult>() {
                             @Override

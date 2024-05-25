@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,6 +42,7 @@ public class ChatListActivity extends AppCompatActivity {
     private SearchView searchView;
     private String currentUserID;
     private FirebaseAuth mAuth;
+    private TextView noChatsMessage;
 
     private int[] imageResIds = {
             R.drawable.whitechar,
@@ -67,6 +69,7 @@ public class ChatListActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
         currentUserID = currentUser.getUid();
         retrieveChatsFromFirebase(currentUserID);
+        noChatsMessage = findViewById(R.id.no_chats_message);
 
 
 
@@ -168,6 +171,11 @@ public class ChatListActivity extends AppCompatActivity {
                     }
                 }
                 adapter.notifyDataSetChanged();
+                if (chatList.isEmpty()) {
+                    noChatsMessage.setVisibility(View.VISIBLE);
+                } else {
+                    noChatsMessage.setVisibility(View.GONE);
+                }
             }
 
             @Override

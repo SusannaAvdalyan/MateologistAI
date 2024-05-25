@@ -5,25 +5,21 @@ public class ChatClass {
     private String chatName;
     private int imageResId;
 
-    // No-argument constructor
     public ChatClass() {
-        // Default constructor required for calls to DataSnapshot.getValue(ChatClass.class)
+
     }
 
-    // Constructor with all fields
     public ChatClass(String date, String chatName, int imageResId) {
         this.date = date;
         this.chatName = chatName;
         this.imageResId = imageResId;
     }
 
-    // Constructor without imageResId
     public ChatClass(String date, String chatName) {
         this.date = date;
         this.chatName = chatName;
     }
 
-    // Getters and setters
     public String getDate() {
         return date;
     }

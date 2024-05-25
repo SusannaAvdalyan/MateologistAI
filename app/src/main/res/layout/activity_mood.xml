@@ -117,6 +117,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
+        app:itemTextColor="#655A7C"
+        app:itemIconTint="#655A7C"
         app:menu="@menu/bottom_menu" />
 
 </RelativeLayout>
