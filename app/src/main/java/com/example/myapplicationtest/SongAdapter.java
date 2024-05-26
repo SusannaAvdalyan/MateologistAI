@@ -1,4 +1,5 @@
 package com.example.myapplicationtest;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,16 +18,19 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
 
     private List<Song> songList;
     private Context context;
+    private OnSongClickListener songClickListener;
 
-    public SongAdapter(List<Song> songList, Context context) {
+    public SongAdapter(List<Song> songList, Context context, OnSongClickListener songClickListener) {
         this.songList = songList;
         this.context = context;
+        this.songClickListener = songClickListener;
     }
 
     public void setSongs(List<Song> songs) {
         this.songList = songs;
         notifyDataSetChanged();
     }
+
     public void clearSongs() {
         songList.clear();
         notifyDataSetChanged();
@@ -67,6 +71,14 @@ public class SongAdapter extends RecyclerView.Adapter<SongAdapter.SongViewHolder
             txtSongName.setText(song.getName());
             txtArtistName.setText(song.getArtists());
             Glide.with(context).load(song.getImageUrl()).into(imgSong);
+            itemView.setOnClickListener(v -> {
+                String spotifyUri = song.getSpotifyUri();
+                songClickListener.onSongClick(spotifyUri);
+            });
         }
+    }
+
+    public interface OnSongClickListener {
+        void onSongClick(String spotifyUri);
     }
 }

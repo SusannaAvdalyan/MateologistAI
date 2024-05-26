@@ -98,7 +98,15 @@ public class AdvicesActivity extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        songAdapter = new SongAdapter(new ArrayList<>(), this);
+        songAdapter = new SongAdapter(new ArrayList<>(), this, new SongAdapter.OnSongClickListener() {
+            @Override
+            public void onSongClick(String spotifyUri) {
+                if (spotifyUri != null && !spotifyUri.isEmpty()) {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(spotifyUri));
+                    startActivity(intent);
+                }
+            }
+        });
         recyclerView.setAdapter(songAdapter);
         showSuggestionsButton = findViewById(R.id.showSuggestionsButton);
         authenticateButton = findViewById(R.id.authenticateButton);
@@ -186,7 +194,6 @@ public class AdvicesActivity extends AppCompatActivity {
             }
         });
     }
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -305,11 +312,6 @@ public class AdvicesActivity extends AppCompatActivity {
             }
         });
     }
-
-
-
-
-
     private boolean isNetworkAvailable() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
@@ -352,7 +354,8 @@ public class AdvicesActivity extends AppCompatActivity {
                                 artistNames.append(artists.getJSONObject(j).getString("name"));
                             }
                             String imageUrl = track.getJSONObject("album").getJSONArray("images").getJSONObject(0).getString("url");
-                            songs.add(new Song(trackName, artistNames.toString(), imageUrl));
+                            String spotifyUri = track.getString("uri"); // Extract Spotify URI
+                            songs.add(new Song(trackName, artistNames.toString(), imageUrl, spotifyUri));
                         }
                         runOnUiThread(() -> {
                             Log.d(TAG, "Updating UI with fetched songs.");
@@ -367,8 +370,6 @@ public class AdvicesActivity extends AppCompatActivity {
             }
         });
     }
-
-
     private void handleSpotifyAuthenticationSuccess(String accessToken) {
         SharedPreferences preferences = getSharedPreferences("com.example.myapplicationtest", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
