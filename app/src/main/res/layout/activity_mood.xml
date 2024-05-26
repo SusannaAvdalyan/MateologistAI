@@ -76,6 +76,7 @@
             android:id="@+id/textInputLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:cursorColor="#655A7C"
             app:hintTextColor="@color/lavender"
             app:boxStrokeColor="@color/lavender"
             android:layout_margin="8dp">
