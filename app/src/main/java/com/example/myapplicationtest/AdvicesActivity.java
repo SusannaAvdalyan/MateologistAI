@@ -290,7 +290,6 @@ public class AdvicesActivity extends AppCompatActivity {
     }
 
     private void fetchMusicSuggestions() {
-        showProgressBar();
         if (!isNetworkAvailable()) {
             Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
             return;
@@ -323,12 +322,14 @@ public class AdvicesActivity extends AppCompatActivity {
         int defaultOffset = new Random().nextInt(100);
         int limit = 5;
         int offset = new Random().nextInt(1000);
+        showProgressBar();
 
         Request request = new Request.Builder()
                 .url("https://api.spotify.com/v1/me/tracks?limit=" + limit + "&offset=" + offset)
                 .addHeader("Authorization", "Bearer " + accessToken)
                 .build();
         client.newCall(request).enqueue(new Callback() {
+
             public void onFailure(Call call, IOException e) {
                 Log.e(TAG, "API request failed", e);
                 runOnUiThread(() -> hideProgressBar());

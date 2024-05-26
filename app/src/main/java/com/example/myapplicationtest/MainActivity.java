@@ -111,10 +111,7 @@ public class MainActivity extends AppCompatActivity {
             String showQuery = queryEditText.getText().toString();
             addToChat(query, MessageClass.SENT_BY_ME);
             queryEditText.setText("");
-
-
             sendMessageToDatabase(chatName, showQuery, MessageClass.SENT_BY_ME);
-
             progressBar.setVisibility(View.VISIBLE);
 
             GeminiPro.getResponse(chatModel, query, new ResponseCallback() {
@@ -122,6 +119,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onResponse(String response) {
                     progressBar.setVisibility(View.GONE);
                     tts.speak(response, TextToSpeech.QUEUE_FLUSH, null, null);
+
                     addToChat(response, MessageClass.SENT_BY_BOT);
                     sendMessageToDatabase(chatName, response, MessageClass.SENT_BY_BOT);
                 }
@@ -162,11 +160,15 @@ public class MainActivity extends AppCompatActivity {
 
             return false;
         });
-
-
-
     }
-
+    @Override
+    public void onPause() {
+        if (tts != null) {
+            tts.stop();
+            tts.shutdown();
+        }
+        super.onPause();
+    }
     private ChatFutures getChatModel() {
         GeminiPro model = new GeminiPro();
         GenerativeModelFutures modelFutures = model.getModel();

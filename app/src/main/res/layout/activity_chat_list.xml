@@ -39,10 +39,8 @@
         android:layout_below="@id/search_bar"
         android:layout_above="@id/addButton"
         android:scrollbars="vertical"
-        android:paddingLeft="2dp"
-        android:paddingRight="2dp"
+        android:padding="10dp"
         tools:listitem="@layout/list_item"
-        android:elevation="100dp"
         android:divider="@android:color/transparent"
         android:dividerHeight="10.0sp" />
 
