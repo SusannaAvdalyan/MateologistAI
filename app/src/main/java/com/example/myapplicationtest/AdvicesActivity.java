@@ -283,6 +283,7 @@ public class AdvicesActivity extends AppCompatActivity {
     }
 
     private void fetchMusicSuggestions() {
+        showProgressBar();
         if (!isNetworkAvailable()) {
             Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
             return;
