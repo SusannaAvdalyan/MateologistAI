@@ -144,6 +144,25 @@ public class AdvicesActivity extends AppCompatActivity {
             adviceTextView.setText("Submit your mood to get advice");
         }
 
+        tokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String accessToken = dataSnapshot.getValue(String.class);
+                if (accessToken != null) {
+                    showSuggestionsButton.setEnabled(true);
+                } else {
+                    showSuggestionsButton.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                // Handle error
+                Log.e(TAG, "Failed to retrieve access token from Firebase: " + databaseError.getMessage());
+            }
+        });
+
+
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -268,20 +287,24 @@ public class AdvicesActivity extends AppCompatActivity {
             Toast.makeText(this, "No internet connection", Toast.LENGTH_SHORT).show();
             return;
         }
-        ensureAccessTokenValid();
-        showProgressBar();
-        songAdapter.clearSongs();
-
-        SharedPreferences preferences = getSharedPreferences("com.example.myapplicationtest", Context.MODE_PRIVATE);
-        String accessToken = preferences.getString("spotify_access_token", null);
-        if (accessToken != null) {
-            Log.d(TAG, "Access token retrieved: " + accessToken);
-            fetchRandomTracks(accessToken); // Fetch random tracks directly
-        } else {
-            Log.e(TAG, "Access token is null. Authenticating with Spotify...");
-            authenticateWithSpotify();
-        }
+        tokenRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                String accessToken = dataSnapshot.getValue(String.class);
+                if (accessToken != null) {
+                    fetchRandomTracks(accessToken);
+                } else {
+                    Log.e(TAG, "Access token not found in Firebase. Authenticating with Spotify...");
+                    authenticateWithSpotify();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.e(TAG, "Failed to retrieve access token from Firebase: " + databaseError.getMessage());
+            }
+        });
     }
+
 
 
 
