@@ -3,14 +3,14 @@
 
     <item
         android:id="@+id/home"
-        android:title="Home"
+        android:title="Գլխավոր"
         android:icon="@drawable/baseline_home_24"
         android:iconTint="@color/lavender"
         />
 
     <item
         android:id="@+id/chat"
-        android:title="Data"
+        android:title="Տվյալներ"
         android:icon="@drawable/baseline_auto_graph_24"
         android:iconTint="@color/lavender"
         />
@@ -23,14 +23,14 @@
 
     <item
         android:id="@+id/mood"
-        android:title="Mood Tracker"
+        android:title="Անալիզ"
         android:icon="@drawable/baseline_emoji_emotions_24"
         android:iconTint="@color/lavender"
         />
 
     <item
         android:id="@+id/settings"
-        android:title="Settings"
+        android:title="Կարգավորումներ"
         android:icon="@drawable/baseline_settings_24"
         android:iconTint="@color/lavender"
         />

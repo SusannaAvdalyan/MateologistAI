@@ -89,7 +89,7 @@ public class MainActivity extends AppCompatActivity {
                 tts.setSpeechRate(1.6f);
                 Set<Voice> voices = tts.getVoices();
                 List<Voice> voiceList = new ArrayList<>(voices);
-                Voice selectedVoice = voiceList.get(11);
+                Voice selectedVoice = voiceList.get(1);
                 tts.setVoice(selectedVoice);
 
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {

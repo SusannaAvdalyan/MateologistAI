@@ -11,10 +11,10 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Write your chat's name"
-        android:fontFamily="sans-serif-condensed-medium"
+        android:text="Գրիր չաթի անունը"
+        android:fontFamily="@font/bokoniqueregular"
         android:textColor="#655A7C"
-        android:textSize="16sp"
+        android:textSize="20sp"
         android:gravity="center_horizontal"
         android:layout_marginBottom="8dp"/>
 
@@ -29,6 +29,7 @@
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/editText"
+            android:fontFamily="@font/bokoniqueregular"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
@@ -41,7 +42,8 @@
         android:layout_width="140dp"
         android:layout_height="wrap_content"
         android:backgroundTint="@color/lavender"
-        android:text="Submit"
+        android:fontFamily="@font/bokoniqueregular"
+        android:text="Հաստատել"
         app:cornerRadius="15dp"
         style="@style/Widget.MaterialComponents.Button"
         android:textColor="@android:color/white"

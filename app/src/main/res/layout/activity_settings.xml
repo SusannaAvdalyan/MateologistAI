@@ -25,9 +25,9 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Logout"
+            android:text="Դուրս գալ"
             android:textSize="20dp"
-            android:fontFamily="sans-serif-condensed-medium"
+            android:fontFamily="@font/bokoniqueregular"
             android:layout_marginTop="15dp"
             android:layout_marginStart="8dp"/>
     </LinearLayout>

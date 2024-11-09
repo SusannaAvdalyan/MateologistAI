@@ -31,7 +31,7 @@ import java.util.Locale;
 
 public class MoodActivity extends AppCompatActivity {
 
-    private ImageView imageView;
+    private TextView gradeView;
     private TextView textViewFeeling;
     private SeekBar seekBar;
     private Button submitButton, okButton;
@@ -48,7 +48,7 @@ public class MoodActivity extends AppCompatActivity {
         setContentView(R.layout.activity_mood);
 
         moodTextInput = findViewById(R.id.moodTextInput);
-        imageView = findViewById(R.id.imageView);
+        gradeView = findViewById(R.id.gradeView);
         textViewFeeling = findViewById(R.id.textViewFeeling);
         seekBar = findViewById(R.id.seekBar);
         submitButton = findViewById(R.id.submitButton);
@@ -80,6 +80,7 @@ public class MoodActivity extends AppCompatActivity {
             }
         });
 
+
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
         bottomNavigationView.setSelectedItemId(R.id.mood);
         bottomNavigationView.setOnItemSelectedListener(item -> {
@@ -103,6 +104,7 @@ public class MoodActivity extends AppCompatActivity {
                 finish();
                 return true;
             }
+
             return false;
         });
     }
@@ -116,24 +118,44 @@ public class MoodActivity extends AppCompatActivity {
     private void updateImageAndText(int progress) {
         switch (progress) {
             case 0:
-                imageView.setImageResource(R.drawable.sad);
-                textViewFeeling.setText("Sad");
+                gradeView.setText("1");
+                textViewFeeling.setText("1");
                 break;
             case 1:
-                imageView.setImageResource(R.drawable.upset);
-                textViewFeeling.setText("Upset");
+                gradeView.setText("2");
+                textViewFeeling.setText("2");
                 break;
             case 2:
-                imageView.setImageResource(R.drawable.nervous);
-                textViewFeeling.setText("Nervous");
+                gradeView.setText("3");
+                textViewFeeling.setText("3");
                 break;
             case 3:
-                imageView.setImageResource(R.drawable.happy);
-                textViewFeeling.setText("Happy");
+                gradeView.setText("4");
+                textViewFeeling.setText("4");
                 break;
             case 4:
-                imageView.setImageResource(R.drawable.amazing);
-                textViewFeeling.setText("Amazing");
+                gradeView.setText("5");
+                textViewFeeling.setText("5");
+                break;
+            case 5:
+                gradeView.setText("6");
+                textViewFeeling.setText("6");
+                break;
+            case 6:
+                gradeView.setText("7");
+                textViewFeeling.setText("7");
+                break;
+            case 7:
+                gradeView.setText("8");
+                textViewFeeling.setText("8");
+                break;
+            case 8:
+                gradeView.setText("9");
+                textViewFeeling.setText("9");
+                break;
+            case 9:
+                gradeView.setText("10");
+                textViewFeeling.setText("10");
                 break;
         }
     }
@@ -150,7 +172,7 @@ public class MoodActivity extends AppCompatActivity {
             moodTextInput.setError(null);
         }
 
-        String query = "Hey, Could you please provide suggestions based on the mood I'm expressing in my texts? Just send your suggestions and nothing more, too long, write just a few essential points. Thanks!" + moodText;
+        String query = "Բարև, խնդրում եմ, կարո՞ղ եք առաջարկություններ ներկայացնել՝ ելնելով այն գնահատականից, որը ստացել եմ որոշակի առարկայից, որը ես արտահայտում եմ իմ տեքստերում: Ուղղակի ուղարկեք ձեր առաջարկները և ոչ ավելին, ոչ շատ երկար, գրեք ընդամենը մի քանի կարևոր կետ: Շնորհակալություն" + moodText;
         sendPromptProgressBar.setVisibility(View.VISIBLE);
         showFeedbackDialog();
 

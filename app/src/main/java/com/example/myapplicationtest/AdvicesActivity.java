@@ -320,7 +320,7 @@ public class AdvicesActivity extends AppCompatActivity {
     private void fetchRandomTracks(String accessToken) {
         OkHttpClient client = new OkHttpClient();
         int defaultOffset = new Random().nextInt(100);
-        int limit = 5;
+        int limit = 10;
         int offset = new Random().nextInt(1000);
         showProgressBar();
 

@@ -109,10 +109,6 @@ public class ChatListActivity extends AppCompatActivity {
 
             return false;
         });
-
-
-
-
     }
 
     public void more(View view) {

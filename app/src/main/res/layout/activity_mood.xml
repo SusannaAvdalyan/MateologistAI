@@ -4,11 +4,15 @@
     android:layout_height="match_parent"
     android:padding="16dp">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="How do you feel now?"
+        android:text="How's your progress?"
         android:fontFamily="sans-serif-condensed-medium"
         android:textColor="#655A7C"
         android:textSize="24sp"
@@ -16,11 +20,12 @@
         android:layout_marginTop="50dp"
         android:padding="8dp" />
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:src="@drawable/happy"
+    <TextView
+        android:id="@+id/gradeView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="5"
+        android:textSize="50dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/textView"
         android:layout_marginTop="20dp"
@@ -30,11 +35,11 @@
         android:id="@+id/textViewFeeling"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Happy"
+        android:text="Grade"
         android:fontFamily="sans-serif-condensed-light"
         android:textColor="@color/lavender"
         android:textSize="24sp"
-        android:layout_below="@id/imageView"
+        android:layout_below="@id/gradeView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:padding="8dp" />
@@ -49,8 +54,8 @@
         android:layout_marginEnd="16dp"
         android:progressTint="#655A7C"
         android:thumb="@drawable/thumb"
-        android:max="4"
-        android:progress="3" />
+        android:max="10"
+        android:progress="5" />
 
     <ProgressBar
         android:id="@+id/sendPromptProgressBar"
@@ -85,10 +90,10 @@
                 android:id="@+id/moodTextInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter your thoughts here"
+                android:hint="Tell us more about your progress"
                 android:textSize="16sp"
                 android:inputType="textMultiLine"
-                android:minLines="5"
+                android:minLines="1"
                 android:maxLines="10"
                 android:backgroundTint="@color/white"
                 android:padding="16dp" />
@@ -121,5 +126,8 @@
         app:itemTextColor="#655A7C"
         app:itemIconTint="#655A7C"
         app:menu="@menu/bottom_menu" />
+
+    </RelativeLayout>
+
 
 </RelativeLayout>
