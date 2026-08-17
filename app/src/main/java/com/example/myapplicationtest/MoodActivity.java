@@ -31,7 +31,7 @@ import java.util.Locale;
 
 public class MoodActivity extends AppCompatActivity {
 
-    private TextView gradeView;
+    private ImageView imageView;
     private TextView textViewFeeling;
     private SeekBar seekBar;
     private Button submitButton, okButton;
@@ -48,7 +48,7 @@ public class MoodActivity extends AppCompatActivity {
         setContentView(R.layout.activity_mood);
 
         moodTextInput = findViewById(R.id.moodTextInput);
-        gradeView = findViewById(R.id.gradeView);
+        imageView = findViewById(R.id.imageView);
         textViewFeeling = findViewById(R.id.textViewFeeling);
         seekBar = findViewById(R.id.seekBar);
         submitButton = findViewById(R.id.submitButton);
@@ -118,44 +118,24 @@ public class MoodActivity extends AppCompatActivity {
     private void updateImageAndText(int progress) {
         switch (progress) {
             case 0:
-                gradeView.setText("1");
-                textViewFeeling.setText("1");
+                imageView.setImageResource(R.drawable.sad);
+                textViewFeeling.setText("Sad");
                 break;
             case 1:
-                gradeView.setText("2");
-                textViewFeeling.setText("2");
+                imageView.setImageResource(R.drawable.upset);
+                textViewFeeling.setText("Upset");
                 break;
             case 2:
-                gradeView.setText("3");
-                textViewFeeling.setText("3");
+                imageView.setImageResource(R.drawable.nervous);
+                textViewFeeling.setText("Nervous");
                 break;
             case 3:
-                gradeView.setText("4");
-                textViewFeeling.setText("4");
+                imageView.setImageResource(R.drawable.happy);
+                textViewFeeling.setText("Happy");
                 break;
             case 4:
-                gradeView.setText("5");
-                textViewFeeling.setText("5");
-                break;
-            case 5:
-                gradeView.setText("6");
-                textViewFeeling.setText("6");
-                break;
-            case 6:
-                gradeView.setText("7");
-                textViewFeeling.setText("7");
-                break;
-            case 7:
-                gradeView.setText("8");
-                textViewFeeling.setText("8");
-                break;
-            case 8:
-                gradeView.setText("9");
-                textViewFeeling.setText("9");
-                break;
-            case 9:
-                gradeView.setText("10");
-                textViewFeeling.setText("10");
+                imageView.setImageResource(R.drawable.amazing);
+                textViewFeeling.setText("Amazing");
                 break;
         }
     }

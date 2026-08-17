@@ -20,12 +20,11 @@
         android:layout_marginTop="50dp"
         android:padding="8dp" />
 
-    <TextView
-        android:id="@+id/gradeView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="5"
-        android:textSize="50dp"
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:src="@drawable/happy"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/textView"
         android:layout_marginTop="20dp"
@@ -39,7 +38,7 @@
         android:fontFamily="sans-serif-condensed-light"
         android:textColor="@color/lavender"
         android:textSize="24sp"
-        android:layout_below="@id/gradeView"
+        android:layout_below="@id/imageView"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:padding="8dp" />
@@ -54,8 +53,8 @@
         android:layout_marginEnd="16dp"
         android:progressTint="#655A7C"
         android:thumb="@drawable/thumb"
-        android:max="10"
-        android:progress="5" />
+        android:max="4"
+        android:progress="4" />
 
     <ProgressBar
         android:id="@+id/sendPromptProgressBar"

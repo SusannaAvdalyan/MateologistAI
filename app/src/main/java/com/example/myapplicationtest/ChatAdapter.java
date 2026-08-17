@@ -57,12 +57,21 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
         chatNameTextView.setText(currentChat.getChatName());
 
         ImageView listImage = listItem.findViewById(R.id.listImage);
+
+        // 1. Check if it's 0 (new chat, never assigned)
         if (currentChat.getImageResId() == 0) {
-            int randomIndex = new Random().nextInt(imageResIds.length);
-            int selectedImageResId = imageResIds[randomIndex];
-            currentChat.setImageResId(selectedImageResId);
+            assignRandomImage(currentChat);
         }
-        listImage.setImageResource(currentChat.getImageResId());
+
+        // 2. Try setting the image. If the ID is an outdated one from Firebase, catch it.
+        try {
+            listImage.setImageResource(currentChat.getImageResId());
+        } catch (android.content.res.Resources.NotFoundException e) {
+            // The ID saved in Firebase is from an older build and no longer exists.
+            // Assign a new valid ID for this session.
+            assignRandomImage(currentChat);
+            listImage.setImageResource(currentChat.getImageResId());
+        }
 
         ImageView btnMoreOptions = listItem.findViewById(R.id.moreBtn);
         btnMoreOptions.setOnClickListener(v -> {
@@ -70,6 +79,12 @@ public class ChatAdapter extends ArrayAdapter<ChatClass> {
         });
 
         return listItem;
+    }
+
+    // Helper method to keep your getView clean
+    private void assignRandomImage(ChatClass chat) {
+        int randomIndex = new Random().nextInt(imageResIds.length);
+        chat.setImageResId(imageResIds[randomIndex]);
     }
 
     private void showOptionsPopup(View anchorView, ChatClass chat) {
